@@ -1,0 +1,10 @@
+.main-content {
+  padding: 40px 200px;
+  font-size: 18px;
+}
+.main-content li {
+  list-style-type: none;
+}
+.main-content h1 {
+  font-size: 30px;
+}

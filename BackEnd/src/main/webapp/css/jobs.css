@@ -1,0 +1,90 @@
+/* Định dạng cơ bản */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f6f9;
+}
+
+/* Header */
+header {
+    text-align: center;
+    padding: 20px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 8px;
+}
+
+/* Main Content */
+main {
+    margin-top: 20px;
+}
+
+/* Thanh tìm kiếm công việc */
+.job-search {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.job-search input {
+    padding: 8px;
+    width: 60%;
+    max-width: 400px;
+    border-radius: 4px 0 0 4px;
+    border: 1px solid #ccc;
+}
+
+.job-search button {
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+}
+
+/* Danh sách vị trí công việc */
+.job-listings {
+    margin-top: 20px;
+}
+
+.job-listings h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Thông tin từng vị trí */
+.job-posting {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.job-posting h3 {
+    margin-top: 0;
+    color: #007bff;
+}
+
+.job-posting p {
+    margin: 5px 0;
+}
+
+.job-posting button {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #666;
+}
