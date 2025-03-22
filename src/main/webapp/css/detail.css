@@ -1,0 +1,67 @@
+.product-related{
+    margin-bottom: 50px;
+}
+.product-related-title{
+    margin: 20px 0;
+}
+.product-related-title p{
+    font-family: var(--main-text-font);
+    font-size: 14px;
+    font-weight: bold;
+    color: #333333;
+}
+.product-related-item{
+    width: 20%;
+    text-align: center;
+    padding: 0 6px;
+}
+.product-related-item img{
+    width: 100%;
+}
+.product-related-item h1{
+    font-family: var(--main-text-font);
+    font-size: 11px;
+    color: #333333;
+    margin-top: 6px;
+}
+.product-related-item p{
+    font-size: 12px;
+    margin: 10px 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.price-old {
+    text-decoration: line-through;
+    color: #888; /* Màu xám nhạt để phân biệt giá cũ */
+    font-size: 14px; /* Kích thước nhỏ hơn giá mới */
+}
+
+.price-new {
+    font-weight: bold; /* Làm nổi bật giá mới */
+    color: #e53935; /* Màu đỏ để thu hút sự chú ý */
+    font-size: 18px; /* Kích thước lớn hơn giá cũ */
+}
+.discount {
+    color: #ff5722; /* Màu cam để làm nổi bật phần giảm giá */
+    font-size: 14px; /* Kích thước nhỏ hơn một chút */
+    font-weight: bold;
+}
+.price-wrapper {
+    display: flex; /* Sắp xếp giá cũ và phần giảm giá theo hàng ngang */
+    gap: 8px; /* Khoảng cách giữa giá cũ và giảm giá */
+    align-items: center; /* Căn giữa theo chiều dọc */
+}
+.product-content {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.product-related-item {
+    flex: 1 1 calc(20% - 20px);
+    box-sizing: border-box;
+    text-align: center;
+}
+
