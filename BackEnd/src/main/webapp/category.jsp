@@ -17,7 +17,7 @@
     <a href="#contact">Liên hệ</a>
   </nav>
 </header>
-
+<!--check-->
 <main>
   <section class="hero">
     <h1>Danh mục sản phẩm</h1>
