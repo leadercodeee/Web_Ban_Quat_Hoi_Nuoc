@@ -1,4 +1,3 @@
-
 package com.example.backend.controller;
 
 import com.example.backend.models.User;

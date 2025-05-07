@@ -1,3 +1,4 @@
+
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <!DOCTYPE html>
@@ -98,7 +99,7 @@
             dateFormat: "dd/mm/yy", // Định dạng ngày cho các trường input
             changeMonth: true, // Cho phép chọn tháng
             changeYear: true,  // Cho phép chọn năm
-                yearRange: "1900:2100" // Cho phép chọn năm từ 1900 đến 2100
+            yearRange: "1900:2100" // Cho phép chọn năm từ 1900 đến 2100
         });
     });
 </script>

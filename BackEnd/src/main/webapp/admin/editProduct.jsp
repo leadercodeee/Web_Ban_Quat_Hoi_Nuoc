@@ -1,3 +1,4 @@
+
 <%@ page import="com.example.backend.models.Product" %>
 <%@ page import="com.example.backend.models.ProductImage" %>
 <%@ page import="java.util.List" %>

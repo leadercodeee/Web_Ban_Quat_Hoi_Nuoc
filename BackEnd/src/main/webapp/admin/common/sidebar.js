@@ -1,3 +1,4 @@
+
 const sidebar = document.querySelector(".left")
 sidebar.innerHTML = `
         <!-- Sidebar -->

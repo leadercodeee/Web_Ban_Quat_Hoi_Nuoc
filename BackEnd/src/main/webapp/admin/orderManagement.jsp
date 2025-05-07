@@ -1,3 +1,4 @@
+
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.*" %>
@@ -92,7 +93,7 @@
                             </select>
                         </td>
                         <td style="text-align: center; cursor: pointer"><a style="color: black"
-                                href="<%= request.getContextPath() %>/admin/orderDetail?orderId=<%= order.getId() %>">
+                                                                           href="<%= request.getContextPath() %>/admin/orderDetail?orderId=<%= order.getId() %>">
                             <i class="fa-solid fa-eye"></i>
                         </a></td>
                     </tr>

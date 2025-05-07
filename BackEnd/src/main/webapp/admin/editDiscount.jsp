@@ -1,3 +1,4 @@
+
 <%@ page import="com.example.backend.models.Discount" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.util.Date" %>

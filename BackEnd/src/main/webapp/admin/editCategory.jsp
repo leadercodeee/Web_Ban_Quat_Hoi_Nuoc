@@ -1,3 +1,4 @@
+
 <%@ page import="com.example.backend.models.Category" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <!DOCTYPE html>
