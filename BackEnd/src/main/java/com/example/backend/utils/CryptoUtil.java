@@ -70,4 +70,27 @@ public class CryptoUtil {
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
         this.privateKey = keyFactory.generatePrivate(keySpec);
     }
+    public String sign(String data) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        Signature s = Signature.getInstance("SHA1withRSA");
+        s.initSign(this.privateKey);
+        s.update(data.getBytes());
+        byte[] sign = s.sign();
+        return Base64.getEncoder().encodeToString(sign);
+    }
+    public String signFile(String src) throws NoSuchAlgorithmException, InvalidKeyException, IOException, SignatureException {
+        Signature s = Signature.getInstance("SHA1withRSA");
+        s.initSign(this.privateKey);
+
+        BufferedInputStream bis= new BufferedInputStream(new FileInputStream(src));
+        int i;
+        byte[] read= new byte[1024];
+        while ((i=bis.read(read))!=-1) {
+            s.update(read,0,i);
+        }
+        byte[] sign = s.sign();
+
+        return Base64.getEncoder().encodeToString(sign);
+
+
+    }
 }
