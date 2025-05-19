@@ -90,7 +90,23 @@ public class CryptoUtil {
         byte[] sign = s.sign();
 
         return Base64.getEncoder().encodeToString(sign);
-
-
     }
+    public boolean verify(String data, String sign) throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException, SignatureException {
+        Signature s = Signature.getInstance("SHA1withRSA");
+        s.initVerify(publicKey);
+        s.update(data.getBytes());
+        return  s.verify(Base64.getDecoder().decode(sign));
+    }
+    public boolean verifyFile(String src, String sign) throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException, SignatureException, IOException {
+        Signature s = Signature.getInstance("SHA1withRSA");
+        s.initVerify(publicKey);
+        BufferedInputStream bis= new BufferedInputStream(new FileInputStream(src));
+        int i;
+        byte[] read= new byte[1024];
+        while ((i=bis.read(read))!=-1) {
+            s.update(read,0,i);
+        }
+        return  s.verify(Base64.getDecoder().decode(sign));
+    }
+
 }
