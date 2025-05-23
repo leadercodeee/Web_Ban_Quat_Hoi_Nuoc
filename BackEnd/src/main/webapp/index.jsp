@@ -81,11 +81,11 @@
         </p>
         <p><a href="shop" class="btn">Mua ngay</a></p>
       </div>
-      <%
-        List<Product> products = (List<Product>) request.getAttribute("products");
-        for (Product product: products){
-      %>
-      <!-- Start Column 3 -->
+        <%
+  List<Product> products = (List<Product>) request.getAttribute("products");
+  if (products != null && !products.isEmpty()) {
+    for (Product product : products) {
+%>
       <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
         <a class="product-item" href="detail?id=<%= product.getId() %>">
           <img
@@ -93,23 +93,22 @@
                   class="img-fluid product-thumbnail"
                   style="width: 350px; height: 250px"
           />
-          <h3 class="product-title"><%= product.getName()%></h3>
+          <h3 class="product-title"><%= product.getName() %></h3>
           <%
             java.text.NumberFormat currencyFormatter =
                     java.text.NumberFormat.getCurrencyInstance(new java.util.Locale("vi", "VN"));
             String formattedPrice = currencyFormatter.format(product.getPrice());
           %>
-          <strong class="product-price"> <%= formattedPrice.replace("₫", "VNĐ") %></strong>
-
+          <strong class="product-price"><%= formattedPrice.replace("₫", "VNĐ") %></strong>
           <span class="icon-cross">
-                <img src="images/cross.svg" class="img-fluid" />
-              </span>
+      <img src="images/cross.svg" class="img-fluid" />
+    </span>
         </a>
       </div>
-      <% } %>
-    </div>
-  </div>
-</div>
+        <%
+    }
+  }
+%>
 <!-- End Product Section -->
 
 <!-- Start Why Choose Us Section -->
