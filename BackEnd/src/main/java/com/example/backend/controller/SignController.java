@@ -1,5 +1,7 @@
 package com.example.backend.controller;
 
+import jakarta.servlet.annotation.WebServlet;
+
 @WebServlet("/sign")
 public class SignController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
