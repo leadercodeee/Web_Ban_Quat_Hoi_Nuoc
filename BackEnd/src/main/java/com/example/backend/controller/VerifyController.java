@@ -1,15 +1,21 @@
 package com.example.backend.controller;
 
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.PublicKey;
 import java.security.Signature;
+import java.util.Base64;
 
 @WebServlet("/verify")
 public class VerifyController extends HttpServlet {
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ServletException, IOException {
         String data = request.getParameter("data");
         String signatureStr = request.getParameter("signature");
         HttpSession session = request.getSession();
