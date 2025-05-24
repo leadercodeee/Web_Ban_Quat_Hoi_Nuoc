@@ -13,7 +13,6 @@ public class Order {
     private Timestamp orderDate;
     private Date deliveryDate;
     private String status;
-    private String signature;
 
     public Order() {
     }
@@ -92,14 +91,6 @@ public class Order {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public String getSignature() {
-        return signature;
-    }
-
-    public void setSignature(String signature) {
-        this.signature = signature;
     }
 
     @Override

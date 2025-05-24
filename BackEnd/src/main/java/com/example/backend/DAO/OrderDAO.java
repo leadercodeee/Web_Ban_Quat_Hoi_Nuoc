@@ -28,7 +28,6 @@ public class OrderDAO {
                 order.setOrderDate(rs.getTimestamp("order_date"));
                 order.setDeliveryDate(new Date(rs.getTimestamp("delivery_date").getTime()));
                 order.setStatus(rs.getString("status"));
-                order.setSignature(rs.getString("signature"));
                 orders.add(order);
             }
         }
@@ -61,28 +60,7 @@ public class OrderDAO {
         }
         return order;
     }
-    public static List<Order> getOrdersByUserId(int userId) {
-        List<Order> orders = new ArrayList<>();
-        try (Connection conn = DBConnect.getConnection()) {
-            PreparedStatement ps = conn.prepareStatement("SELECT * FROM orders WHERE user_id = ?");
-            ps.setInt(1, userId);
-            ResultSet resultSet = ps.executeQuery();
-            while (resultSet.next()) {
-                Order order = new Order();
-                order.setId(resultSet.getInt("id"));
-                order.setUserId(resultSet.getInt("user_id"));
-                order.setTotalAmount(resultSet.getDouble("total_amount"));
-                order.setShippingAddress(resultSet.getString("shipping_address"));
-                order.setPaymentMethod(resultSet.getString("payment_method"));
-                order.setOrderDate(resultSet.getTimestamp("order_date"));
-                order.setDeliveryDate(new Date(resultSet.getTimestamp("delivery_date").getTime()));
-                order.setStatus(resultSet.getString("status"));
-                orders.add(order);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return orders;
+
     }
 
-}
+
