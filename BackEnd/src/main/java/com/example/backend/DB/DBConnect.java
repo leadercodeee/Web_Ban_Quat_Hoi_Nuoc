@@ -8,7 +8,7 @@ import java.sql.SQLException;
 public class DBConnect {
     static String url = "jdbc:mysql://localhost:3306/backend";
     static String user = "root";
-    String pass = "";
+    static String pass = "";
     static Connection connection;
     static
     DBConnect instance;
@@ -17,10 +17,10 @@ public class DBConnect {
         if (instance == null) instance = new DBConnect();
         return instance;
     }
-    public Connection getConnection() {
+    public static Connection getConnection() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection(url, user, pass);
+            connection = DriverManager.getConnection(url, user,pass);
             return connection;
         } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
