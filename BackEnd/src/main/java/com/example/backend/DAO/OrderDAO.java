@@ -1,4 +1,3 @@
-
 package com.example.backend.DAO;
 
 import com.example.backend.DB.DBConnect;
@@ -10,6 +9,7 @@ import java.util.List;
 
 public class OrderDAO {
     Connection connection = DBConnect.getInstance().getConnection();
+
     public List<Order> getAllOrders() throws SQLException {
         List<Order> orders = new ArrayList<>();
         String query = "SELECT * FROM orders";
@@ -28,11 +28,13 @@ public class OrderDAO {
                 order.setOrderDate(rs.getTimestamp("order_date"));
                 order.setDeliveryDate(new Date(rs.getTimestamp("delivery_date").getTime()));
                 order.setStatus(rs.getString("status"));
+                order.setSignature(rs.getString("signature")); // ✅ Thêm dòng này
                 orders.add(order);
             }
         }
         return orders;
     }
+
     public Order getOrderById(String orderId) {
         Order order = null;
         String query = "SELECT * FROM orders WHERE id = ?";
@@ -53,6 +55,7 @@ public class OrderDAO {
                     order.setOrderDate(resultSet.getTimestamp("order_date"));
                     order.setDeliveryDate(new Date(resultSet.getTimestamp("delivery_date").getTime()));
                     order.setStatus(resultSet.getString("status"));
+                    order.setSignature(resultSet.getString("signature")); // ✅ Thêm dòng này
                 }
             }
         } catch (SQLException e) {
@@ -61,4 +64,31 @@ public class OrderDAO {
         return order;
     }
 
+    public int saveOrder(Order order) throws SQLException {
+        String query = "INSERT INTO orders (user_id, total_amount, shipping_address, payment_method, order_date, delivery_date, status, signature) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        int generatedId = -1;
+
+        try (PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setInt(1, order.getUserId());
+            stmt.setDouble(2, order.getTotalAmount());
+            stmt.setString(3, order.getShippingAddress());
+            stmt.setString(4, order.getPaymentMethod());
+            stmt.setTimestamp(5, order.getOrderDate());
+            stmt.setDate(6, order.getDeliveryDate());
+            stmt.setString(7, order.getStatus());
+            stmt.setString(8, order.getSignature()); // ✅ Đã có
+
+            int affectedRows = stmt.executeUpdate();
+
+            if (affectedRows > 0) {
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        generatedId = generatedKeys.getInt(1);
+                    }
+                }
+            }
+        }
+
+        return generatedId;
+    }
 }
