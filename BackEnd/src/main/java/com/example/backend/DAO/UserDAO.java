@@ -211,5 +211,13 @@ public class UserDAO {
         }
         return null; // Trả về null nếu không tìm thấy hoặc đăng nhập thất bại
     }
+    public boolean userHasKey(String userId) throws Exception {
+        try (PreparedStatement stmt = connection.prepareStatement("SELECT public_key FROM users WHERE user_id = ?")) {
+            stmt.setString(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next() && rs.getString("public_key") != null;
+        }
+    }
+
 
 }

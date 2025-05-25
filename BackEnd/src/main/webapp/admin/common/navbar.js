@@ -1,3 +1,4 @@
+
 const navbar = document.querySelector(".navbar")
 navbar.innerHTML = `  <div class="input-search">
             <input type="text" placeholder="Search" />
