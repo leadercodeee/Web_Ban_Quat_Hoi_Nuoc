@@ -16,7 +16,6 @@ public class UserKeyService {
         key.setUserId(userId);
         key.setPublicKey(DigitalSignatureUtil.encodePublicKey(keyPair.getPublic()));
         key.setPrivateKey(DigitalSignatureUtil.encodePrivateKey(keyPair.getPrivate()));
-        key.setStatus("active");
 
         dao.save(key);
     }
