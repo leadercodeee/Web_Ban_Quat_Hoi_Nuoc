@@ -11,11 +11,10 @@ public class UserService {
     private final UserDAO userDAO = new UserDAO();
 
     public boolean addUser(User user) {
-        // Kiểm tra trùng email trước khi thêm
         if (userDAO.getUserByEmail(user.getEmail()) != null) {
             return false; // Email đã tồn tại
         }
-        return userDAO.addUser(user); // Mã hóa đã được xử lý ở DAO
+        return userDAO.addUser(user);
     }
 
     public List<User> getAllUsers() {
@@ -35,7 +34,7 @@ public class UserService {
         if (user == null || !BCrypt.checkpw(currentPassword, user.getPassword())) {
             return false;
         }
-        return userDAO.updatePassword(userId, newPassword); // DAO sẽ tự mã hóa
+        return userDAO.updatePassword(userId, newPassword);
     }
 
     public boolean updateUser(User user) {
@@ -48,9 +47,9 @@ public class UserService {
 
     public boolean register(User user) {
         if (userDAO.getUserByEmail(user.getEmail()) != null) {
-            return false; // Email đã tồn tại
+            return false;
         }
-        return userDAO.register(user); // Mã hóa trong DAO
+        return userDAO.register(user);
     }
 
     public boolean resetPassword(String email, String newPassword) {
@@ -58,7 +57,7 @@ public class UserService {
         if (user == null) {
             return false;
         }
-        userDAO.updatePassword(email, newPassword); // DAO sẽ mã hóa
-        return true;
+        // Sử dụng userId thay vì email để nhất quán
+        return userDAO.updatePassword(user.getId(), newPassword);
     }
 }

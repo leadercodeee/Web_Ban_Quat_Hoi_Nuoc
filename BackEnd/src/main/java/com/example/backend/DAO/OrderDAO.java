@@ -12,7 +12,11 @@ public class OrderDAO {
 
     public List<Order> getAllOrders() throws SQLException {
         List<Order> orders = new ArrayList<>();
-        String query = "SELECT * FROM orders";
+        String query = """
+            SELECT o.*, u.username, u.full_name, u.phone
+            FROM orders o
+            JOIN users u ON o.user_id = u.id
+        """;
 
         try (
                 PreparedStatement stmt = connection.prepareStatement(query);
@@ -28,7 +32,13 @@ public class OrderDAO {
                 order.setOrderDate(rs.getTimestamp("order_date"));
                 order.setDeliveryDate(new Date(rs.getTimestamp("delivery_date").getTime()));
                 order.setStatus(rs.getString("status"));
-                order.setSignature(rs.getString("signature")); // ✅ Thêm dòng này
+                order.setSignature(rs.getString("signature"));
+
+                // Thêm thông tin người dùng
+                order.setUsername(rs.getString("username"));
+                order.setFullName(rs.getString("full_name"));
+                order.setPhone(rs.getString("phone"));
+
                 orders.add(order);
             }
         }
@@ -37,25 +47,33 @@ public class OrderDAO {
 
     public Order getOrderById(String orderId) {
         Order order = null;
-        String query = "SELECT * FROM orders WHERE id = ?";
+        String query = """
+            SELECT o.*, u.username, u.full_name, u.phone
+            FROM orders o
+            JOIN users u ON o.user_id = u.id
+            WHERE o.id = ?
+        """;
 
-        try (
-                PreparedStatement statement = connection.prepareStatement(query)) {
-
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, orderId);
 
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
                     order = new Order();
-                    order.setId(resultSet.getInt("id"));
-                    order.setUserId(resultSet.getInt("user_id"));
-                    order.setTotalAmount(resultSet.getDouble("total_amount"));
-                    order.setShippingAddress(resultSet.getString("shipping_address"));
-                    order.setPaymentMethod(resultSet.getString("payment_method"));
-                    order.setOrderDate(resultSet.getTimestamp("order_date"));
-                    order.setDeliveryDate(new Date(resultSet.getTimestamp("delivery_date").getTime()));
-                    order.setStatus(resultSet.getString("status"));
-                    order.setSignature(resultSet.getString("signature")); // ✅ Thêm dòng này
+                    order.setId(rs.getInt("id"));
+                    order.setUserId(rs.getInt("user_id"));
+                    order.setTotalAmount(rs.getDouble("total_amount"));
+                    order.setShippingAddress(rs.getString("shipping_address"));
+                    order.setPaymentMethod(rs.getString("payment_method"));
+                    order.setOrderDate(rs.getTimestamp("order_date"));
+                    order.setDeliveryDate(new Date(rs.getTimestamp("delivery_date").getTime()));
+                    order.setStatus(rs.getString("status"));
+                    order.setSignature(rs.getString("signature"));
+
+                    // Thêm thông tin người dùng
+                    order.setUsername(rs.getString("username"));
+                    order.setFullName(rs.getString("full_name"));
+                    order.setPhone(rs.getString("phone"));
                 }
             }
         } catch (SQLException e) {
@@ -76,7 +94,7 @@ public class OrderDAO {
             stmt.setTimestamp(5, order.getOrderDate());
             stmt.setDate(6, order.getDeliveryDate());
             stmt.setString(7, order.getStatus());
-            stmt.setString(8, order.getSignature()); // ✅ Đã có
+            stmt.setString(8, order.getSignature());
 
             int affectedRows = stmt.executeUpdate();
 
@@ -90,5 +108,17 @@ public class OrderDAO {
         }
 
         return generatedId;
+    }
+
+    public boolean updateSignature(int orderId, String signature) {
+        String sql = "UPDATE orders SET signature = ? WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, signature);
+            stmt.setInt(2, orderId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
