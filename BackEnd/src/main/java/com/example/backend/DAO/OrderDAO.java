@@ -91,4 +91,17 @@ public class OrderDAO {
 
         return generatedId;
     }
+
+    public boolean updateSignature(int orderId, String signature) {
+        String sql = "UPDATE orders SET signature = ? WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, signature);
+            stmt.setInt(2, orderId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }

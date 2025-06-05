@@ -1,8 +1,8 @@
-
 package com.example.backend.models;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
 public class Order {
     private int id;
@@ -13,13 +13,11 @@ public class Order {
     private Timestamp orderDate;
     private Date deliveryDate;
     private String status;
-    private String signature; // chữ ký dưới dạng base64
+    private String signature; // chữ ký số (Base64)
 
-    public Order() {
-    }
+    public Order() {}
 
-    public Order(int id, int userId, double totalAmount, String shippingAddress, String paymentMethod, Timestamp orderDate, Date
-            deliveryDate, String status) {
+    public Order(int id, int userId, double totalAmount, String shippingAddress, String paymentMethod, Timestamp orderDate, Date deliveryDate, String status) {
         this.id = id;
         this.userId = userId;
         this.totalAmount = totalAmount;
@@ -30,75 +28,60 @@ public class Order {
         this.status = status;
     }
 
-    public int getId() {
-        return id;
-    }
+    // --- Getters/Setters ---
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    public int getId() { return id; }
 
-    public int getUserId() {
-        return userId;
-    }
+    public void setId(int id) { this.id = id; }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
+    public int getUserId() { return userId; }
 
-    public double getTotalAmount() {
-        return totalAmount;
-    }
+    public void setUserId(int userId) { this.userId = userId; }
 
-    public void setTotalAmount(double totalAmount) {
-        this.totalAmount = totalAmount;
-    }
+    public double getTotalAmount() { return totalAmount; }
 
-    public String getShippingAddress() {
-        return shippingAddress;
-    }
+    public void setTotalAmount(double totalAmount) { this.totalAmount = totalAmount; }
 
-    public void setShippingAddress(String shippingAddress) {
-        this.shippingAddress = shippingAddress;
-    }
+    public String getShippingAddress() { return shippingAddress; }
 
-    public String getPaymentMethod() {
-        return paymentMethod;
-    }
+    public void setShippingAddress(String shippingAddress) { this.shippingAddress = shippingAddress; }
 
-    public void setPaymentMethod(String paymentMethod) {
-        this.paymentMethod = paymentMethod;
-    }
+    public String getPaymentMethod() { return paymentMethod; }
 
-    public Timestamp getOrderDate() {
-        return orderDate;
-    }
+    public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
 
-    public void setOrderDate(Timestamp orderDate) {
-        this.orderDate = orderDate;
-    }
+    public Timestamp getOrderDate() { return orderDate; }
 
-    public Date getDeliveryDate() {
-        return deliveryDate;
-    }
+    public void setOrderDate(Timestamp orderDate) { this.orderDate = orderDate; }
 
-    public void setDeliveryDate(Date deliveryDate) {
-        this.deliveryDate = deliveryDate;
-    }
+    public Date getDeliveryDate() { return deliveryDate; }
 
-    public String getStatus() {
-        return status;
-    }
+    public void setDeliveryDate(Date deliveryDate) { this.deliveryDate = deliveryDate; }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-    public String getSignature() {
-        return signature;
-    }
+    public String getStatus() { return status; }
 
-    public void setSignature(String signature) {
-        this.signature = signature;
+    public void setStatus(String status) { this.status = status; }
+
+    public String getSignature() { return signature; }
+
+    public void setSignature(String signature) { this.signature = signature; }
+
+    // --- Kết xuất chuỗi định danh dùng để ký số ---
+    public String toConcatenatedString() {
+        // Format timestamp và date để ổn định kiểu dữ liệu khi hash/ký
+        SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        String formattedOrderDate = orderDate != null ? timestampFormat.format(orderDate) : "";
+        String formattedDeliveryDate = deliveryDate != null ? dateFormat.format(deliveryDate) : "";
+
+        return userId + "|" +
+                totalAmount + "|" +
+                (shippingAddress != null ? shippingAddress : "") + "|" +
+                (paymentMethod != null ? paymentMethod : "") + "|" +
+                formattedOrderDate + "|" +
+                formattedDeliveryDate + "|" +
+                (status != null ? status : "");
     }
 
     @Override
@@ -106,12 +89,13 @@ public class Order {
         return "Order{" +
                 "id=" + id +
                 ", userId=" + userId +
-                ", totalAmount='" + totalAmount + '\'' +
+                ", totalAmount=" + totalAmount +
                 ", shippingAddress='" + shippingAddress + '\'' +
                 ", paymentMethod='" + paymentMethod + '\'' +
-                ", orderDate='" + orderDate + '\'' +
-                ", deliveryDate='" + deliveryDate + '\'' +
+                ", orderDate=" + orderDate +
+                ", deliveryDate=" + deliveryDate +
                 ", status='" + status + '\'' +
+                ", signature='" + signature + '\'' +
                 '}';
     }
 }
