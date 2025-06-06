@@ -1,6 +1,8 @@
 package com.example.backend.DAO;
 
 import com.example.backend.DB.DBConnect;
+
+import com.example.backend.DB.DBConnect;
 import com.example.backend.models.User;
 import com.example.backend.utils.HashUtil;
 import org.mindrot.jbcrypt.BCrypt;
@@ -279,5 +281,22 @@ public class UserDAO {
                 rs.getDate("dob") != null ? rs.getDate("dob").toString() : null,
                 rs.getString("address")
         );
+    }
+    //get phone by Userr= inDB
+    public String getPhoneByUserId(int userId) {
+        String phone = null;
+        String sql = "SELECT phone FROM users WHERE id = ?";
+        try (Connection conn = DBConnect.getInstance().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                phone = rs.getString("phone");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return phone;
     }
 }

@@ -53,6 +53,7 @@ public class OrderPlaceController extends HttpServlet {
         // Tạo đơn hàng
         Order order = new Order();
         order.setUserId(user.getId());
+        order.setPhone(user.getPhone());
         order.setTotalAmount(totalAmount);
         order.setShippingAddress(shippingAddress);
         order.setPaymentMethod(paymentMethod);

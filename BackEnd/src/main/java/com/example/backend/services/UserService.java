@@ -1,9 +1,14 @@
 package com.example.backend.services;
 
 import com.example.backend.DAO.UserDAO;
+import com.example.backend.DB.DBConnect;
 import com.example.backend.models.User;
+import java.sql.Connection;
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 public class UserService {
@@ -59,5 +64,24 @@ public class UserService {
         }
         // Sử dụng userId thay vì email để nhất quán
         return userDAO.updatePassword(user.getId(), newPassword);
+    }
+    public String getPhoneByUserId(int userId) {
+        String phone = null;
+        String query = "SELECT phone FROM users WHERE id = ?";
+
+        try (Connection conn = (Connection) DBConnect.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, userId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    phone = rs.getString("phone");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return phone;
     }
 }
