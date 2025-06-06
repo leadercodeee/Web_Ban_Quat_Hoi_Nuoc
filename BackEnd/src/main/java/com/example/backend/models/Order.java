@@ -22,10 +22,11 @@ public class Order {
 
     public Order() {}
 
-    public Order(int id, int userId, double totalAmount, String shippingAddress, String paymentMethod,
+    public Order(int id, int userId, String phone, double totalAmount, String shippingAddress, String paymentMethod,
                  Timestamp orderDate, Date deliveryDate, String status) {
         this.id = id;
         this.userId = userId;
+        this.phone = phone;
         this.totalAmount = totalAmount;
         this.shippingAddress = shippingAddress;
         this.paymentMethod = paymentMethod;
