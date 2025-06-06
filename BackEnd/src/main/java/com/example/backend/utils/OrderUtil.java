@@ -10,15 +10,16 @@ public class OrderUtil {
 
     // Tạo chuỗi dữ liệu đại diện cho hóa đơn để hash
     public static String getOrderDataString(Order order) {
-        // Tùy chỉnh theo các trường quan trọng của hóa đơn
         return order.getUserId() + "|" +
                 order.getTotalAmount() + "|" +
                 order.getShippingAddress() + "|" +
                 order.getPaymentMethod() + "|" +
                 order.getOrderDate().toString() + "|" +
                 order.getDeliveryDate().toString() + "|" +
-                order.getStatus();
+                order.getStatus() + "|" +
+                order.getPhoneNumber(); // thêm dòng này
     }
+
 
     // Tạo hash SHA-256 từ chuỗi dữ liệu
     public static String hashOrder(Order order) throws NoSuchAlgorithmException {
