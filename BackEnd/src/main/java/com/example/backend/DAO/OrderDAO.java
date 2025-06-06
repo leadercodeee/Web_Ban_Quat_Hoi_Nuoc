@@ -48,7 +48,7 @@ public class OrderDAO {
     public Order getOrderById(String orderId) {
         Order order = null;
         String query = """
-            SELECT o.*, u.username, u.full_name, u.phone
+            SELECT o.*, u.username, u.fullName, u.phone
             FROM orders o
             JOIN users u ON o.user_id = u.id
             WHERE o.id = ?
