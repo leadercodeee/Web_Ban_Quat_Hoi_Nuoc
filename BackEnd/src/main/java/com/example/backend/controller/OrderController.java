@@ -94,6 +94,12 @@ public class OrderController extends HttpServlet {
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Tổng tiền phải là số hợp lệ.");
         }
+        String phone = request.getParameter("phone");
+        if (phone == null || phone.trim().isEmpty()) {
+            throw new IllegalArgumentException("Số điện thoại không được để trống.");
+        }
+        order.setPhone(phone);
+
 
         String shippingAddress = request.getParameter("shippingAddress");
         if (shippingAddress == null || shippingAddress.trim().isEmpty()) {
