@@ -17,7 +17,7 @@ public class OrderUtil {
                 order.getOrderDate().toString() + "|" +
                 order.getDeliveryDate().toString() + "|" +
                 order.getStatus() + "|" +
-                order.getPhoneNumber(); // thêm dòng này
+                order.getPhone(); // thêm dòng này
     }
 
 
