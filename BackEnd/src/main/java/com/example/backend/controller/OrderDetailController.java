@@ -22,28 +22,44 @@ import java.util.List;
 public class OrderDetailController extends HttpServlet {
 
     OrderDetailService orderDetailService = new OrderDetailService();
+    OrderService orderService = new OrderService(); // thêm dòng này
+
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         User userSession = (User) session.getAttribute("user");
-        if(userSession == null ){
+
+        if (userSession == null || !"admin".equals(userSession.getRole())) {
             response.sendRedirect("/home");
             return;
         }
-        if (!"admin".equals(userSession.getRole())) {
-            response.sendRedirect("/home");
-            return;
-        }
-        String orderId = request.getParameter("orderId");
+
+        String orderIdStr = request.getParameter("orderId");
+        int orderId;
 
         try {
-            List<OrderDetail> orderDetails= orderDetailService.getOrderDetailsByOrderId(Integer.parseInt(orderId));
-            request.setAttribute("orderDetails", orderDetails);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+            orderId = Integer.parseInt(orderIdStr);
+        } catch (NumberFormatException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Order ID không hợp lệ.");
+            return;
         }
 
-        // Gửi dữ liệu order vào JSP
+        try {
+            List<OrderDetail> orderDetails = orderDetailService.getOrderDetailsByOrderId(orderId);
+            Order order = orderService.getOrderById(String.valueOf(orderId));
 
-        request.getRequestDispatcher("/admin/orderDetail.jsp").forward(request, response);
+            if (order == null) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Không tìm thấy đơn hàng.");
+                return;
+            }
+
+            request.setAttribute("orderDetails", orderDetails);
+            request.setAttribute("order", order); // thêm dòng này để truyền sang JSP
+
+            request.getRequestDispatcher("/admin/orderDetail.jsp").forward(request, response);
+        } catch (SQLException e) {
+            throw new ServletException("Lỗi truy vấn dữ liệu đơn hàng", e);
+        }
     }
 }
+
