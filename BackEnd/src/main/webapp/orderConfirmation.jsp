@@ -37,6 +37,7 @@
 <table>
     <tr><th>Mã đơn hàng</th><td><%= order.getId() %></td></tr>
     <tr><th>ID người dùng</th><td><%= order.getUserId() %></td></tr>
+    <tr><th>Số điện thoại</th><td><%= order.getPhone() %></td></tr>
     <tr><th>Tổng tiền</th><td><%= String.format("%,.2f", order.getTotalAmount()) %> VNĐ</td></tr>
     <tr><th>Địa chỉ giao hàng</th><td><%= order.getShippingAddress() %></td></tr>
     <tr><th>Phương thức thanh toán</th><td><%= order.getPaymentMethod() %></td></tr>
