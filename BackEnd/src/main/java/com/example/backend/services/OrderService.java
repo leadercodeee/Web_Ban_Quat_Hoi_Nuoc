@@ -87,4 +87,8 @@ public class OrderService {
             LOGGER.info("Lưu đơn hàng mới thành công với id: " + newId);
         }
     }
+    public List<Order> getOrdersByUserId(int userId) {
+        return orderDAO.getOrdersByUserId(userId);
+    }
+
 }

@@ -8,37 +8,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OrderDAO {
-    Connection connection = DBConnect.getInstance().getConnection();
+    private final Connection connection = DBConnect.getInstance().getConnection();
 
     public List<Order> getAllOrders() throws SQLException {
         List<Order> orders = new ArrayList<>();
         String query = """
-            SELECT o.*, u.username, u.full_name, u.phone
+            SELECT o.*, u.username, u.fullName, u.phone
             FROM orders o
             JOIN users u ON o.user_id = u.id
         """;
 
         try (
                 PreparedStatement stmt = connection.prepareStatement(query);
-                ResultSet rs = stmt.executeQuery()) {
-
+                ResultSet rs = stmt.executeQuery()
+        ) {
             while (rs.next()) {
-                Order order = new Order();
-                order.setId(rs.getInt("id"));
-                order.setUserId(rs.getInt("user_id"));
-                order.setTotalAmount(rs.getDouble("total_amount"));
-                order.setShippingAddress(rs.getString("shipping_address"));
-                order.setPaymentMethod(rs.getString("payment_method"));
-                order.setOrderDate(rs.getTimestamp("order_date"));
-                order.setDeliveryDate(new Date(rs.getTimestamp("delivery_date").getTime()));
-                order.setStatus(rs.getString("status"));
-                order.setSignature(rs.getString("signature"));
-
-                // Thêm thông tin người dùng
-                order.setUsername(rs.getString("username"));
-                order.setFullName(rs.getString("full_name"));
-                order.setPhone(rs.getString("phone"));
-
+                Order order = mapResultSetToOrderWithUser(rs);
                 orders.add(order);
             }
         }
@@ -48,32 +33,17 @@ public class OrderDAO {
     public Order getOrderById(String orderId) {
         Order order = null;
         String query = """
-            SELECT o.*, u.username, u.full_name, u.phone
+            SELECT o.*, u.username, u.fullName, u.phone
             FROM orders o
             JOIN users u ON o.user_id = u.id
             WHERE o.id = ?
         """;
 
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, orderId);
-
-            try (ResultSet rs = statement.executeQuery()) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, orderId);
+            try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    order = new Order();
-                    order.setId(rs.getInt("id"));
-                    order.setUserId(rs.getInt("user_id"));
-                    order.setTotalAmount(rs.getDouble("total_amount"));
-                    order.setShippingAddress(rs.getString("shipping_address"));
-                    order.setPaymentMethod(rs.getString("payment_method"));
-                    order.setOrderDate(rs.getTimestamp("order_date"));
-                    order.setDeliveryDate(new Date(rs.getTimestamp("delivery_date").getTime()));
-                    order.setStatus(rs.getString("status"));
-                    order.setSignature(rs.getString("signature"));
-
-                    // Thêm thông tin người dùng
-                    order.setUsername(rs.getString("username"));
-                    order.setFullName(rs.getString("full_name"));
-                    order.setPhone(rs.getString("phone"));
+                    order = mapResultSetToOrderWithUser(rs);
                 }
             }
         } catch (SQLException e) {
@@ -83,7 +53,12 @@ public class OrderDAO {
     }
 
     public int saveOrder(Order order) throws SQLException {
-        String query = "INSERT INTO orders (user_id, total_amount, shipping_address, payment_method, order_date, delivery_date, status, signature) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = """
+            INSERT INTO orders 
+            (user_id, total_amount, shipping_address, payment_method, order_date, delivery_date, status, signature) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """;
+
         int generatedId = -1;
 
         try (PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
@@ -106,7 +81,6 @@ public class OrderDAO {
                 }
             }
         }
-
         return generatedId;
     }
 
@@ -120,5 +94,59 @@ public class OrderDAO {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public List<Order> getOrdersByUserId(int userId) {
+        List<Order> orders = new ArrayList<>();
+        String sql = "SELECT * FROM orders WHERE user_id = ? ORDER BY order_date DESC";
+
+        try (
+                Connection conn = DBConnect.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+        ) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Order order = new Order();
+                    order.setId(rs.getInt("id"));
+                    order.setUserId(rs.getInt("user_id"));
+                    order.setOrderDate(rs.getTimestamp("order_date"));
+                    order.setTotalAmount(rs.getDouble("total_amount"));
+                    order.setShippingAddress(rs.getString("shipping_address"));
+                    order.setPaymentMethod(rs.getString("payment_method"));
+                    order.setDeliveryDate(rs.getDate("delivery_date"));
+                    order.setStatus(rs.getString("status"));
+                    order.setSignature(rs.getString("signature"));
+                    // Nếu cần thêm các trường khác, có thể map thêm tại đây
+
+                    orders.add(order);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return orders;
+    }
+
+    private Order mapResultSetToOrderWithUser(ResultSet rs) throws SQLException {
+        Order order = new Order();
+        order.setId(rs.getInt("id"));
+        order.setUserId(rs.getInt("user_id"));
+        order.setTotalAmount(rs.getDouble("total_amount"));
+        order.setShippingAddress(rs.getString("shipping_address"));
+        order.setPaymentMethod(rs.getString("payment_method"));
+        order.setOrderDate(rs.getTimestamp("order_date"));
+        Timestamp deliveryTs = rs.getTimestamp("delivery_date");
+        if (deliveryTs != null) {
+            order.setDeliveryDate(new Date(deliveryTs.getTime()));
+        }
+        order.setStatus(rs.getString("status"));
+        order.setSignature(rs.getString("signature"));
+
+        order.setUsername(rs.getString("username"));
+        order.setFullName(rs.getString("fullName"));
+        order.setPhone(rs.getString("phone"));
+
+        return order;
     }
 }

@@ -280,4 +280,17 @@ public class UserDAO {
                 rs.getString("address")
         );
     }
+    public String getPublicKeyByUserId(int userId) throws SQLException {
+        String sql = "SELECT public_key FROM users WHERE id = ?";
+        try (Connection conn = DBConnect.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("public_key");
+                }
+            }
+        }
+        return null;
+    }
 }
