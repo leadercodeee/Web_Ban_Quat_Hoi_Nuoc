@@ -3,6 +3,7 @@ package com.example.backend.models;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 public class Order {
     private int id;
@@ -85,6 +86,16 @@ public class Order {
     public String getPhone() { return phone; }
 
     public void setPhone(String phone) { this.phone = phone; }
+
+    private List<OrderItem> items;
+
+    public List<OrderItem> getItems() {
+        return items;
+    }
+
+    public void setItems(List<OrderItem> items) {
+        this.items = items;
+    }
 
     // --- Chuỗi định danh dùng để ký số ---
     public String toConcatenatedString() {
