@@ -7,7 +7,8 @@ public class SignatureDataBuilder {
     public static String forOrder(Order order) {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(order.getOrderId()).append("|")
+        // Noi dung cua hoa don
+        sb.append(order.getId()).append("|")
                 .append(order.getUserId()).append("|")
                 .append(order.getPhone()).append("|")
                 .append(order.getTotalAmount()).append("|")
@@ -17,12 +18,14 @@ public class SignatureDataBuilder {
                 .append(order.getDeliveryDate()).append("|")
                 .append(order.getStatus());
 
-        for (OrderItem item : order.getItems()) {
-            sb.append("|")
-                    .append(item.getProductName()).append("|")
-                    .append(item.getQuantity()).append("|")
-                    .append(item.getUnitPrice()).append("|")
-                    .append(item.getTotalPrice());
+        // Danh sach cac mat hang trong hoa don
+        if (order.getItems() != null) {
+            for (OrderItem item : order.getItems()) {
+                sb.append("|")
+                        .append(item.getProductId()).append("|")
+                        .append(item.getQuantity()).append("|")
+                        .append(item.getPrice()); // Don gia moi san pham
+            }
         }
 
         return sb.toString();
