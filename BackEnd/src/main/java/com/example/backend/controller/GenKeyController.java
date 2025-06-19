@@ -2,7 +2,7 @@ package com.example.backend.controller;
 
 import com.example.backend.models.User;
 import com.example.backend.services.UserKeyService;
-import com.example.backend.utils.SignatureUtil; // Có thể cần xem xét lại import này nếu DigitalSignatureUtil là cũ
+import com.example.backend.utils.RSASignatureUtil; // Có thể cần xem xét lại import này nếu DigitalSignatureUtil là cũ
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;

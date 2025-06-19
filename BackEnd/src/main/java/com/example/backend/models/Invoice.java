@@ -13,6 +13,7 @@ public class Invoice {
     private LocalDate deliveryDate;
     private String status;
     private String signature;
+    private Date date;
 
     public String getOrderId() {
         return orderId;
@@ -97,6 +98,8 @@ public class Invoice {
     public String getMaKhachHang() {
         return customerId;
     }
+
+    public Date getSignedAt() {return date;}
 
     public void setSignedAt(Date date) {
         this.signature = date.toString();

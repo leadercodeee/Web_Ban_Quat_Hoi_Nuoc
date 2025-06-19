@@ -8,11 +8,20 @@ import java.util.Date;
 
 public class InvoiceSigningService {
 
-    public static String generateInvoiceData(Invoice invoice) {
-        return invoice.getMaDonHang() + "|" +
-                invoice.getMaKhachHang() + "|" +
-                invoice.getTongTien();
+    // Lấy dữ liệu từ hoá đơn để tạo chuỗi ký
+    public static String generateInvoiceData(Invoice inv) {
+        return String.join("|",
+                inv.getOrderId(),
+                inv.getCustomerId(),
+                String.valueOf(inv.getTotalAmount()),
+                java.util.Objects.toString(inv.getShippingAddress(), ""),
+                java.util.Objects.toString(inv.getPaymentMethod(), ""),
+                java.util.Objects.toString(inv.getOrderDate(), ""),
+                java.util.Objects.toString(inv.getDeliveryDate(), ""),
+                java.util.Objects.toString(inv.getStatus(), "")
+        );
     }
+
 
     public void signInvoice(Invoice invoice, KeyPair keyPair) throws Exception {
         String data = generateInvoiceData(invoice);

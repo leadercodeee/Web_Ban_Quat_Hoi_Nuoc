@@ -1,4 +1,6 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+<%@ page isELIgnored="false" %>  <!-- Enable EL -->
 <html>
 <head>
     <title>Xác minh chữ ký đơn hàng</title>
@@ -7,19 +9,18 @@
 <h2>Xác minh chữ ký đơn hàng</h2>
 
 <form action="verifySignature" method="post">
-    <label>Order ID: </label>
-    <input type="text" name="orderId" required><br><br>
+    <label>Order&nbsp;ID:</label>
+    <input type="number" name="orderId" required />   <!-- number cho chắc kiểu -->
+    <br/><br/>
 
-    <label>Public Key (Base64): </label><br>
-    <textarea name="publicKeyBase64" rows="5" cols="80" required></textarea><br><br>
+    <label>Public&nbsp;Key (Base64):</label><br/>
+    <textarea name="publicKeyBase64" rows="6" cols="80" required></textarea>
+    <br/><br/>
 
-    <input type="submit" value="Xác minh">
+    <input type="submit" value="Xác&nbsp;minh"/>
 </form>
 
-<% String result = (String) request.getAttribute("verificationResult");
-    if (result != null) { %>
-<h3>Kết quả: <%= result %></h3>
-<% } %>
+<h3>Kết quả: </h3>
 
 </body>
 </html>
