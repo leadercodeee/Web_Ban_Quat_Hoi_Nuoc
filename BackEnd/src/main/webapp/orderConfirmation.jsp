@@ -15,6 +15,13 @@
         publicKeyBase64 = java.util.Base64.getEncoder().encodeToString(publicKey.getEncoded());
     }
 %>
+<%
+    if ("true".equals(request.getParameter("hashed"))) {
+%>
+<p style="color: green;"><strong>✅ Đã hash đơn hàng thành công.</strong></p>
+<%
+    }
+%>
 
 <!DOCTYPE html>
 <html>
@@ -33,7 +40,7 @@
 </head>
 <body>
 
-<h1>HÓA ĐƠN</h1>
+<h1>Xác nhận đơn hàng</h1>
 
 <table>
     <tr><th>Mã đơn hàng</th><td><%= order.getId() %></td></tr>
@@ -77,6 +84,13 @@
     %>
     <tr><td colspan="4">Không có sản phẩm nào</td></tr>
     <% } %>
+
+
+    <form action="confirm-order" method="post">
+        <input type="hidden" name="orderId" value="<%= order.getId() %>"/>
+        <button type="submit">Xác nhận đơn hàng</button>
+    </form>
+
     </tbody>
 </table>
 

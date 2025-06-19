@@ -53,7 +53,7 @@ public class OrderDAO {
     public int saveOrder(Order order) throws SQLException {
         String query = """
             INSERT INTO orders 
-            (user_id, total_amount, shipping_address, payment_method, order_date, delivery_date, status, signature, hashvalue) 
+            (user_id, total_amount, shipping_address, payment_method, order_date, delivery_date, status, signature, hash) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """;
 
@@ -100,7 +100,7 @@ public class OrderDAO {
                     order.setDeliveryDate(rs.getDate("delivery_date"));
                     order.setStatus(rs.getString("status"));
                     order.setSignature(rs.getString("signature"));
-                    order.setHash(rs.getString("hashvalue"));
+                    order.setHash(rs.getString("hash"));
                     orders.add(order);
                 }
             }
@@ -124,7 +124,7 @@ public class OrderDAO {
 
         order.setStatus(rs.getString("status"));
         order.setSignature(rs.getString("signature"));
-        order.setHash(rs.getString("hashvalue"));
+        order.setHash(rs.getString("hash"));
 
         order.setUsername(rs.getString("username"));
         order.setFullName(rs.getString("fullName"));
@@ -133,7 +133,7 @@ public class OrderDAO {
         return order;
     }
     public boolean updateOrderSignatureAndHash(Order order) {
-        String sql = "UPDATE orders SET signature = ?, hashvalue = ? WHERE id = ?";
+        String sql = "UPDATE orders SET signature = ?, hash = ? WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, order.getSignature());
             stmt.setString(2, order.getHash());
@@ -150,4 +150,41 @@ public class OrderDAO {
             return false;
         }
     }
+    // Lấy danh sách đơn hàng chưa có hash
+    public List<Order> getOrdersWithoutHash() {
+        List<Order> orders = new ArrayList<>();
+        String sql = "SELECT * FROM orders WHERE hash IS NULL";
+        try (Connection conn = DBConnect.getInstance().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Order order = new Order();
+                order.setId(rs.getInt("id"));
+                order.setUserId(rs.getInt("user_id"));
+                order.setOrderDate(rs.getTimestamp("order_date"));
+                order.setTotalAmount(rs.getDouble("total_amount"));
+                order.setShippingAddress(rs.getString("shipping_address"));
+                order.setPaymentMethod(rs.getString("payment_method"));
+                // thêm các field khác nếu cần
+                orders.add(order);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return orders;
+    }
+
+    // Cập nhật hash vào DB
+    public void updateHash(int orderId, String hash) {
+        String sql = "UPDATE orders SET hash = ? WHERE id = ?";
+        try (Connection conn = DBConnect.getInstance().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, hash);
+            ps.setInt(2, orderId);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

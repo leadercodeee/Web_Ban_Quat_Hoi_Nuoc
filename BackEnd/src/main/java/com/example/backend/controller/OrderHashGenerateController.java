@@ -46,8 +46,8 @@ public class OrderHashGenerateController extends HttpServlet {
         String dataToHash = order.toConcatenatedString();
 
         // Tạo hash bằng SHA-256
-        String hashValue = OrderHashUtil.sha256Hash(dataToHash);
-        order.setHash(hashValue);
+        String hash = OrderHashUtil.sha256Hash(dataToHash);
+        order.setHash(hash);
 
         // Cập nhật hash vào DB
         boolean updated = orderDAO.updateOrderSignatureAndHash(order); // bạn có thể bỏ signature nếu chưa có
@@ -59,7 +59,7 @@ public class OrderHashGenerateController extends HttpServlet {
         }
 
         request.setAttribute("order", order);
-        request.setAttribute("orderHash", hashValue);
+        request.setAttribute("orderHash", hash);
         request.getRequestDispatcher("orderHashView.jsp").forward(request, response);
     }
 }

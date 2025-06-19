@@ -90,4 +90,44 @@ public class OrderConfirmationController extends HttpServlet {
 
         request.getRequestDispatcher("orderConfirmation.jsp").forward(request, response);
     }
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String orderIdStr = request.getParameter("orderId");
+        if (orderIdStr == null || orderIdStr.isEmpty()) {
+            response.sendRedirect("order-history.jsp");
+            return;
+        }
+
+        int orderId;
+        try {
+            orderId = Integer.parseInt(orderIdStr);
+        } catch (NumberFormatException e) {
+            response.sendRedirect("order-history.jsp");
+            return;
+        }
+
+        OrderDAO orderDAO = new OrderDAO();
+        Order order = orderDAO.getOrderById(orderIdStr);
+        if (order == null) {
+            response.sendRedirect("order-history.jsp");
+            return;
+        }
+
+        // Tính hash
+        try {
+            com.example.backend.services.InvoiceHashService hashService = new com.example.backend.services.InvoiceHashService();
+            String newHash = hashService.generateOrderHash(order);
+            orderDAO.updateHash(orderId, newHash);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.getWriter().write("❌ Lỗi khi hash đơn hàng");
+            return;
+        }
+
+        // Chuyển về lại trang xác nhận để xem kết quả
+        response.sendRedirect("order-confirmation?orderId=" + orderId + "&hashed=true");
+    }
+
 }

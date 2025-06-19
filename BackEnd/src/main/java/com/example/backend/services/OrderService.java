@@ -66,17 +66,17 @@ public class OrderService {
 
             PrivateKey privateKey = DigitalSignatureUtil.decodePrivateKey(userKey.getPrivateKey());
 
-            // Chuỗi hóa đơn để hash
-            String dataString = OrderUtil.toDataString(order);
-            String hash = HashUtil.sha256(dataString);
-            byte[] hashBytes = HashUtil.hexStringToByteArray(hash);
+            // Hash hóa đơn
+            InvoiceHashService hashService = new InvoiceHashService();
+            String orderHash = hashService.generateOrderHash(order);
+            order.setHash(orderHash);
 
-            // Ký hash
+            // Ký số hash
+            byte[] hashBytes = HashUtil.hexStringToByteArray(orderHash);
             String signatureBase64 = DigitalSignatureUtil.signRaw(hashBytes, privateKey);
-
-            order.setHash(hash);
             order.setSignature(signatureBase64);
 
+            // Lưu đơn hàng
             int generatedId = orderDAO.saveOrder(order);
             return generatedId > 0;
         } catch (Exception e) {
@@ -84,4 +84,5 @@ public class OrderService {
             return false;
         }
     }
+
 }
