@@ -295,5 +295,21 @@ public class UserDAO {
             e.printStackTrace();
         }
         return phone;
+
     }
+
+        public String getUserPublicKey(int userId) throws SQLException {
+            String sql = "SELECT public_key FROM user_keys WHERE user_id = ?";
+            try (Connection conn = getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, userId);
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    return rs.getString("public_key");  // Base64 public key
+                }
+            }
+            return null;
+        }
+    
+
 }

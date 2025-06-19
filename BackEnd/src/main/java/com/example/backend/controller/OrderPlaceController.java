@@ -85,10 +85,29 @@ public class OrderPlaceController extends HttpServlet {
             orderDetail.setPrice(cartItem.getProduct().getPrice());
             orderDetailService.saveOrderDetail(orderDetail);
         }
+
+        // Gán lại ID sau khi lưu để có dữ liệu đầy đủ
+        order.setId(orderId);
+
+        // Hash đơn hàng
         InvoiceHashService hashService = new InvoiceHashService();
         Order savedOrder = orderService.getOrderById(orderId);
-        String orderHash = hashService.generateOrderHash(savedOrder);
-        orderService.updateOrderHash(orderId, orderHash);
+
+        if (savedOrder == null) {
+            response.getWriter().write("❌ Không thể tìm thấy đơn hàng sau khi lưu.");
+            return;
+        }
+
+        try {
+            String orderHash = hashService.generateOrderHash(savedOrder);
+            orderService.updateOrderHash(orderId, orderHash);
+            order.setHash(orderHash); // gán lại để truyền sang JSP nếu cần
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.getWriter().write("❌ Lỗi khi tạo hash đơn hàng: " + e.getMessage());
+            return;
+        }
+
         // Xóa giỏ hàng
         session.removeAttribute("cart");
 

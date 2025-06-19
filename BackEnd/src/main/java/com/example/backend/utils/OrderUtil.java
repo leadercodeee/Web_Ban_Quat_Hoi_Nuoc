@@ -1,6 +1,7 @@
 package com.example.backend.utils;
 
 import com.example.backend.models.Order;
+import com.example.backend.models.OrderItem;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -47,4 +48,26 @@ public class OrderUtil {
         // Chuyển mảng byte hash sang chuỗi hex hoặc base64
         return java.util.Base64.getEncoder().encodeToString(hashBytes);
     }
+    public static String toDataString(Order order) {
+        if (order == null) return "";
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(order.getId());
+        sb.append(order.getUserId());
+        sb.append(order.getOrderDate() != null ? order.getOrderDate().toString() : "");
+        sb.append(order.getTotalAmount());
+
+        sb.append(order.getShippingAddress() != null ? order.getShippingAddress() : "");
+        sb.append(order.getPaymentMethod() != null ? order.getPaymentMethod() : "");
+
+        for (OrderItem item : order.getItems()) {
+            if (item == null) continue;
+            sb.append(item.getProductId() != 0 ? item.getProductId() : "");
+            sb.append(item.getPrice() != 0.0 ? item.getPrice() : "");
+        }
+
+
+        return sb.toString();
+    }
+
 }

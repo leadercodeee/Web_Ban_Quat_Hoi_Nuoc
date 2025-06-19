@@ -71,7 +71,10 @@ public class OrderConfirmationController extends HttpServlet {
         boolean signatureValid = false;
         try {
             UserDAO userDAO = new UserDAO();
-            String base64PublicKey = userDAO.getPublicKeyByUserId(order.getUserId());
+            if (userDAO == null) {
+                throw new ServletException("Failed to initialize UserDAO");
+            }
+            String base64PublicKey = userDAO.getUserPublicKey(order.getUserId());
             publicKey = DigitalSignatureUtil.decodePublicKey(base64PublicKey);
 
             String data = order.toConcatenatedString();  // Tạo chuỗi dữ liệu giống lúc hash
