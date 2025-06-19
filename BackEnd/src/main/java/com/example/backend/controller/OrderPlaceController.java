@@ -4,6 +4,7 @@ import com.example.backend.models.*;
 import com.example.backend.services.OrderPlaceService;
 import com.example.backend.services.OrderPlaceDetailService;
 import com.example.backend.utils.DigitalSignatureUtil;
+import com.example.backend.services.InvoiceHashService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -83,7 +84,10 @@ public class OrderPlaceController extends HttpServlet {
             orderDetail.setPrice(cartItem.getProduct().getPrice());
             orderDetailService.saveOrderDetail(orderDetail);
         }
-
+        InvoiceHashService hashService = new InvoiceHashService();
+        Order savedOrder = orderService.getOrderById(orderId);
+        String orderHash = hashService.generateOrderHash(savedOrder);
+        orderService.updateOrderHash(orderId, orderHash);
         // Xóa giỏ hàng
         session.removeAttribute("cart");
 

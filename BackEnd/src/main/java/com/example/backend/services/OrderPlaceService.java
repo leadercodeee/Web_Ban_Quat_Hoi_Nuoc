@@ -1,6 +1,7 @@
 
 package com.example.backend.services;
 
+import com.example.backend.DAO.OrderDAO;
 import com.example.backend.DB.DBConnect;
 import com.example.backend.models.Order;
 import java.sql.Connection;
@@ -78,4 +79,10 @@ public class OrderPlaceService {
         }
         return null;
     }
+
+    public void updateOrderHash(int orderId, String orderHash) {
+        OrderDAO orderDAO = new OrderDAO();
+        orderDAO.updateHash(orderId, orderHash);
+    }
+
 }

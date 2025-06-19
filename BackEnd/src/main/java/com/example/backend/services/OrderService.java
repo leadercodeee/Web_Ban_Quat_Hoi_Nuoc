@@ -8,6 +8,8 @@ import com.example.backend.utils.DigitalSignatureUtil;
 import com.example.backend.utils.HashUtil;
 import com.example.backend.utils.OrderUtil;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.security.PrivateKey;
 import java.util.List;
 import java.util.logging.Level;
@@ -83,6 +85,27 @@ public class OrderService {
             LOGGER.log(Level.SEVERE, "Lỗi khi tạo order có chữ ký số", e);
             return false;
         }
+
     }
 
+    public String generateOrderHash(Order order) {
+        try {
+            String data = order.getId() + "|" +
+                    order.getUserId() + "|" +
+                    order.getOrderDate() + "|" +
+                    order.getTotalAmount() + "|" +
+                    order.getShippingAddress() + "|" +
+                    order.getPaymentMethod();
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(data.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                hexString.append(String.format("%02x", b));
+            }
+            return hexString.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
