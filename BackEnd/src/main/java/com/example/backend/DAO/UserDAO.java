@@ -222,7 +222,6 @@ public class UserDAO {
         }
     }
 
-
     public User login(String email, String password) {
         if (email == null || password == null) {
             System.out.println("Email hoặc password là null");
@@ -265,7 +264,6 @@ public class UserDAO {
         return null;
     }
 
-
     private User mapResultSetToUser(ResultSet rs) throws SQLException {
         return new User(
                 rs.getInt("id"),
@@ -280,17 +278,22 @@ public class UserDAO {
                 rs.getString("address")
         );
     }
-    public String getPublicKeyByUserId(int userId) throws SQLException {
-        String sql = "SELECT public_key FROM users WHERE id = ?";
+
+    //get phone by Userr= inDB
+    public String getPhoneByUserId(int userId) {
+        String phone = null;
+        String sql = "SELECT phone FROM users WHERE id = ?";
         try (Connection conn = DBConnect.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, userId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getString("public_key");
-                }
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                phone = rs.getString("phone");
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return null;
+        return phone;
     }
 }

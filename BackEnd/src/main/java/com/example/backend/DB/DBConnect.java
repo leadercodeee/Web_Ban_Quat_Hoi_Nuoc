@@ -25,13 +25,8 @@ public class DBConnect {
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-        config.setMaximumPoolSize(20);
-        config.setMinimumIdle(5);
-        config.setConnectionTimeout(30000);
-        config.setIdleTimeout(600000);
-        config.setMaxLifetime(1800000);
-        config.setLeakDetectionThreshold(2000);
-
+        // Giữ lại cài đặt mới cho pool size
+        config.setMaximumPoolSize(30);
 
         dataSource = new HikariDataSource(config);
     }

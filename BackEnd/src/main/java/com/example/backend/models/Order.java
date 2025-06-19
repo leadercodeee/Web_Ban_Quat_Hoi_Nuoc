@@ -3,6 +3,7 @@ package com.example.backend.models;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 public class Order {
     private int id;
@@ -15,20 +16,25 @@ public class Order {
     private String status;
     private String signature; // chữ ký số (Base64)
     private String hash;      // hash value của order
-    private String orderData;
-    private String orderHash;
+    // private String orderData; // Xóa
+    // private String orderHash; // Xóa
 
     // Các trường bổ sung (nếu có)
     private String username;
     private String fullName;
     private String phone;
 
+    // Giữ lại phần mới
+    private List<OrderItem> items;
+
+
     public Order() {}
 
-    public Order(int id, int userId, double totalAmount, String shippingAddress, String paymentMethod,
+    public Order(int id, int userId, String phone, double totalAmount, String shippingAddress, String paymentMethod,
                  Timestamp orderDate, Date deliveryDate, String status) {
         this.id = id;
         this.userId = userId;
+        this.phone = phone;
         this.totalAmount = totalAmount;
         this.shippingAddress = shippingAddress;
         this.paymentMethod = paymentMethod;
@@ -76,21 +82,22 @@ public class Order {
 
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
-    public String getOrderData() {
-        return orderData;
+
+    // Xóa các getter/setter của orderData và orderHash vì đã loại bỏ trường này
+    // public String getOrderData() { return orderData; }
+    // public void setOrderData(String orderData) { this.orderData = orderData; }
+    // public String getOrderHash() { return orderHash; }
+    // public void setOrderHash(String orderHash) { this.orderHash = orderHash; }
+
+    // Giữ lại getter/setter cho items
+    public List<OrderItem> getItems() {
+        return items;
     }
 
-    public void setOrderData(String orderData) {
-        this.orderData = orderData;
+    public void setItems(List<OrderItem> items) {
+        this.items = items;
     }
 
-    public String getOrderHash() {
-        return orderHash;
-    }
-
-    public void setOrderHash(String orderHash) {
-        this.orderHash = orderHash;
-    }
     /**
      * Chuỗi định danh dùng để tính hash và ký số
      */

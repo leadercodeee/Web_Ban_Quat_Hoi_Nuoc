@@ -2,23 +2,28 @@ package com.example.backend.utils;
 
 import com.example.backend.models.Order;
 
-import java.text.SimpleDateFormat;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat; // Vẫn cần nếu bạn muốn dùng SimpleDateFormat cho định dạng ngày
 
 public class OrderUtil {
 
-    // Format cố định để tránh lỗi khác format giữa client & server
-    private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    // Tạo chuỗi dữ liệu đại diện cho hóa đơn để hash
+    // Giữ phiên bản mới
+    public static String getOrderDataString(Order order) {
+        // Cần xem xét lại việc .toString() cho Date/Timestamp, có thể không nhất quán
+        // Nên dùng SimpleDateFormat như phiên bản cũ nếu muốn định dạng chuẩn xác
+        SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    // Tạo chuỗi dữ liệu đại diện cho hóa đơn để hash (đảm bảo nhất quán)
-    public static String toDataString(Order order) {
         String formattedOrderDate = order.getOrderDate() != null
-                ? TIMESTAMP_FORMAT.format(order.getOrderDate()) : "";
-
+                ? timestampFormat.format(order.getOrderDate()) : "";
         String formattedDeliveryDate = order.getDeliveryDate() != null
-                ? DATE_FORMAT.format(order.getDeliveryDate()) : "";
+                ? dateFormat.format(order.getDeliveryDate()) : "";
 
-        return order.getId() + "|" +
+        // Kết hợp dữ liệu từ cả hai phiên bản, đảm bảo tất cả các trường cần thiết đều có
+        return order.getId() + "|" + // Có thể bỏ id nếu hash trước khi id được tạo
                 order.getUserId() + "|" +
                 (order.getUsername() != null ? order.getUsername() : "") + "|" +
                 (order.getFullName() != null ? order.getFullName() : "") + "|" +
@@ -29,5 +34,17 @@ public class OrderUtil {
                 formattedOrderDate + "|" +
                 formattedDeliveryDate + "|" +
                 (order.getStatus() != null ? order.getStatus() : "");
+    }
+
+
+    // Tạo hash SHA-256 từ chuỗi dữ liệu
+    // Giữ phiên bản mới
+    public static String hashOrder(Order order) throws NoSuchAlgorithmException {
+        String data = getOrderDataString(order);
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] hashBytes = digest.digest(data.getBytes(StandardCharsets.UTF_8));
+
+        // Chuyển mảng byte hash sang chuỗi hex hoặc base64
+        return java.util.Base64.getEncoder().encodeToString(hashBytes);
     }
 }
