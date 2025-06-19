@@ -1,15 +1,14 @@
 package com.example.backend.services;
 
-import com.example.backend.DAO.UserKeyDAO;
 import com.example.backend.DAO.OrderDAO;
+import com.example.backend.DAO.UserKeyDAO;
 import com.example.backend.models.Order;
 import com.example.backend.models.UserKey;
 import com.example.backend.utils.DigitalSignatureUtil;
+import com.example.backend.utils.HashUtil;
 import com.example.backend.utils.OrderUtil;
 
 import java.security.PrivateKey;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,13 +32,13 @@ public class OrderService {
     public List<Order> getAllOrders() {
         try {
             return orderDAO.getAllOrders();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Lỗi khi lấy danh sách đơn hàng", e);
-            return new ArrayList<>();
+            return List.of();
         }
     }
 
-    public Order getOrderById(String orderId){
+    public Order getOrderById(String orderId) {
         try {
             return orderDAO.getOrderById(orderId);
         } catch (Exception e) {
@@ -48,47 +47,41 @@ public class OrderService {
         }
     }
 
-    public void signAndSaveOrder(Order order) throws Exception {
-        if (order == null) {
-            throw new IllegalArgumentException("Order không được null");
-        }
-
-        // Bước 1: Tạo hash của đơn hàng
-        String hash = OrderUtil.hashOrder(order);
-
-        // Bước 2: Lấy khóa đang active của user
-        UserKey userKey = userKeyDAO.getKeyByUserId(order.getUserId());
-        if (userKey == null) {
-            throw new RuntimeException("Người dùng chưa có khóa!");
-        }
-
-        // Bước 3: Chuyển privateKey từ Base64 sang đối tượng PrivateKey
-        PrivateKey privateKey = DigitalSignatureUtil.decodePrivateKey(userKey.getPrivateKey());
-
-        // Bước 4: Ký hash của đơn hàng
-        String signature = DigitalSignatureUtil.sign(hash, privateKey);
-
-        // Bước 5: Gán chữ ký vào order
-        order.setSignature(signature);
-
-        // Bước 6: Lưu hoặc cập nhật order
-        if (order.getId() > 0) {
-            boolean updated = orderDAO.updateSignature(order.getId(), signature);
-            if (!updated) {
-                throw new RuntimeException("Không thể cập nhật chữ ký cho đơn hàng id: " + order.getId());
-            }
-            LOGGER.info("Cập nhật chữ ký thành công cho đơn hàng id: " + order.getId());
-        } else {
-            int newId = orderDAO.saveOrder(order);
-            if (newId <= 0) {
-                throw new RuntimeException("Không thể lưu đơn hàng mới");
-            }
-            order.setId(newId);
-            LOGGER.info("Lưu đơn hàng mới thành công với id: " + newId);
-        }
-    }
     public List<Order> getOrdersByUserId(int userId) {
-        return orderDAO.getOrdersByUserId(userId);
+        try {
+            return orderDAO.getOrdersByUserId(userId);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi lấy đơn hàng theo userId: " + userId, e);
+            return List.of();
+        }
     }
 
+    public boolean createOrderWithSignature(Order order) {
+        try {
+            UserKey userKey = userKeyDAO.getKeyByUserId(order.getUserId());
+            if (userKey == null) {
+                LOGGER.warning("Không tìm thấy private key cho userId: " + order.getUserId());
+                return false;
+            }
+
+            PrivateKey privateKey = DigitalSignatureUtil.decodePrivateKey(userKey.getPrivateKey());
+
+            // Chuỗi hóa đơn để hash
+            String dataString = OrderUtil.toDataString(order);
+            String hash = HashUtil.sha256(dataString);
+            byte[] hashBytes = HashUtil.hexStringToByteArray(hash);
+
+            // Ký hash
+            String signatureBase64 = DigitalSignatureUtil.signRaw(hashBytes, privateKey);
+
+            order.setHash(hash);
+            order.setSignature(signatureBase64);
+
+            int generatedId = orderDAO.saveOrder(order);
+            return generatedId > 0;
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi tạo order có chữ ký số", e);
+            return false;
+        }
+    }
 }

@@ -18,10 +18,8 @@ public class OrderDAO {
             JOIN users u ON o.user_id = u.id
         """;
 
-        try (
-                PreparedStatement stmt = connection.prepareStatement(query);
-                ResultSet rs = stmt.executeQuery()
-        ) {
+        try (PreparedStatement stmt = connection.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 Order order = mapResultSetToOrderWithUser(rs);
                 orders.add(order);
@@ -55,8 +53,8 @@ public class OrderDAO {
     public int saveOrder(Order order) throws SQLException {
         String query = """
             INSERT INTO orders 
-            (user_id, total_amount, shipping_address, payment_method, order_date, delivery_date, status, signature) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            (user_id, total_amount, shipping_address, payment_method, order_date, delivery_date, status, signature, hashvalue) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """;
 
         int generatedId = -1;
@@ -70,6 +68,7 @@ public class OrderDAO {
             stmt.setDate(6, order.getDeliveryDate());
             stmt.setString(7, order.getStatus());
             stmt.setString(8, order.getSignature());
+            stmt.setString(9, order.getHash());
 
             int affectedRows = stmt.executeUpdate();
 
@@ -83,27 +82,11 @@ public class OrderDAO {
         }
         return generatedId;
     }
-
-    public boolean updateSignature(int orderId, String signature) {
-        String sql = "UPDATE orders SET signature = ? WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, signature);
-            stmt.setInt(2, orderId);
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
     public List<Order> getOrdersByUserId(int userId) {
         List<Order> orders = new ArrayList<>();
         String sql = "SELECT * FROM orders WHERE user_id = ? ORDER BY order_date DESC";
 
-        try (
-                Connection conn = DBConnect.getInstance().getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql)
-        ) {
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -117,8 +100,7 @@ public class OrderDAO {
                     order.setDeliveryDate(rs.getDate("delivery_date"));
                     order.setStatus(rs.getString("status"));
                     order.setSignature(rs.getString("signature"));
-                    // Nếu cần thêm các trường khác, có thể map thêm tại đây
-
+                    order.setHash(rs.getString("hashvalue"));
                     orders.add(order);
                 }
             }
@@ -136,17 +118,36 @@ public class OrderDAO {
         order.setShippingAddress(rs.getString("shipping_address"));
         order.setPaymentMethod(rs.getString("payment_method"));
         order.setOrderDate(rs.getTimestamp("order_date"));
-        Timestamp deliveryTs = rs.getTimestamp("delivery_date");
-        if (deliveryTs != null) {
-            order.setDeliveryDate(new Date(deliveryTs.getTime()));
-        }
+
+        Date deliveryDate = rs.getDate("delivery_date");
+        order.setDeliveryDate(deliveryDate);
+
         order.setStatus(rs.getString("status"));
         order.setSignature(rs.getString("signature"));
+        order.setHash(rs.getString("hashvalue"));
 
         order.setUsername(rs.getString("username"));
         order.setFullName(rs.getString("fullName"));
         order.setPhone(rs.getString("phone"));
 
         return order;
+    }
+    public boolean updateOrderSignatureAndHash(Order order) {
+        String sql = "UPDATE orders SET signature = ?, hashvalue = ? WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, order.getSignature());
+            stmt.setString(2, order.getHash());
+            stmt.setInt(3, order.getId());
+            int rows = stmt.executeUpdate();
+            if (rows == 0) {
+                System.err.println("Update signature and hash failed: no order found with id " + order.getId());
+                return false;
+            }
+            return true;
+        } catch (SQLException e) {
+            System.err.println("SQL Exception during updateOrderSignatureAndHash: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
     }
 }

@@ -10,6 +10,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.security.PublicKey;
 import java.sql.SQLException;
@@ -19,6 +20,7 @@ import java.util.Map;
 
 @WebServlet("/order-confirmation")
 public class OrderConfirmationController extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -64,27 +66,28 @@ public class OrderConfirmationController extends HttpServlet {
             cartItems.put(product.getId(), item);
         }
 
-        // Lấy public key của user từ DB hoặc config
+        // Kiểm tra chữ ký
         PublicKey publicKey = null;
         boolean signatureValid = false;
         try {
-            // Giả sử bạn có UserDAO để lấy publicKey lưu dạng Base64 theo userId
             UserDAO userDAO = new UserDAO();
             String base64PublicKey = userDAO.getPublicKeyByUserId(order.getUserId());
-
             publicKey = DigitalSignatureUtil.decodePublicKey(base64PublicKey);
 
-            String data = order.toConcatenatedString();
-
+            String data = order.toConcatenatedString();  // Tạo chuỗi dữ liệu giống lúc hash
             signatureValid = DigitalSignatureUtil.verify(data, order.getSignature(), publicKey);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+        // Truyền dữ liệu sang JSP
         request.setAttribute("order", order);
         request.setAttribute("cartItems", cartItems);
         request.setAttribute("signatureValid", signatureValid);
         request.setAttribute("publicKey", publicKey);
+        request.setAttribute("orderHash", order.getHash());
+
         request.getRequestDispatcher("orderConfirmation.jsp").forward(request, response);
     }
 }

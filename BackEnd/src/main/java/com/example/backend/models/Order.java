@@ -14,8 +14,11 @@ public class Order {
     private Date deliveryDate;
     private String status;
     private String signature; // chữ ký số (Base64)
+    private String hash;      // hash value của order
+    private String orderData;
+    private String orderHash;
 
-    // NEW FIELDS
+    // Các trường bổ sung (nếu có)
     private String username;
     private String fullName;
     private String phone;
@@ -35,57 +38,62 @@ public class Order {
     }
 
     // --- Getters & Setters ---
-
     public int getId() { return id; }
-
     public void setId(int id) { this.id = id; }
 
     public int getUserId() { return userId; }
-
     public void setUserId(int userId) { this.userId = userId; }
 
     public double getTotalAmount() { return totalAmount; }
-
     public void setTotalAmount(double totalAmount) { this.totalAmount = totalAmount; }
 
     public String getShippingAddress() { return shippingAddress; }
-
     public void setShippingAddress(String shippingAddress) { this.shippingAddress = shippingAddress; }
 
     public String getPaymentMethod() { return paymentMethod; }
-
     public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
 
     public Timestamp getOrderDate() { return orderDate; }
-
     public void setOrderDate(Timestamp orderDate) { this.orderDate = orderDate; }
 
     public Date getDeliveryDate() { return deliveryDate; }
-
     public void setDeliveryDate(Date deliveryDate) { this.deliveryDate = deliveryDate; }
 
     public String getStatus() { return status; }
-
     public void setStatus(String status) { this.status = status; }
 
     public String getSignature() { return signature; }
-
     public void setSignature(String signature) { this.signature = signature; }
 
-    // NEW GETTERS & SETTERS
-    public String getUsername() { return username; }
+    public String getHash() { return hash; }
+    public void setHash(String hash) { this.hash = hash; }
 
+    public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
 
     public String getFullName() { return fullName; }
-
     public void setFullName(String fullName) { this.fullName = fullName; }
 
     public String getPhone() { return phone; }
-
     public void setPhone(String phone) { this.phone = phone; }
+    public String getOrderData() {
+        return orderData;
+    }
 
-    // --- Chuỗi định danh dùng để ký số ---
+    public void setOrderData(String orderData) {
+        this.orderData = orderData;
+    }
+
+    public String getOrderHash() {
+        return orderHash;
+    }
+
+    public void setOrderHash(String orderHash) {
+        this.orderHash = orderHash;
+    }
+    /**
+     * Chuỗi định danh dùng để tính hash và ký số
+     */
     public String toConcatenatedString() {
         SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -104,23 +112,5 @@ public class Order {
                 formattedOrderDate + "|" +
                 formattedDeliveryDate + "|" +
                 (status != null ? status : "");
-    }
-
-    @Override
-    public String toString() {
-        return "Order{" +
-                "id=" + id +
-                ", userId=" + userId +
-                ", username='" + username + '\'' +
-                ", fullName='" + fullName + '\'' +
-                ", phone='" + phone + '\'' +
-                ", totalAmount=" + totalAmount +
-                ", shippingAddress='" + shippingAddress + '\'' +
-                ", paymentMethod='" + paymentMethod + '\'' +
-                ", orderDate=" + orderDate +
-                ", deliveryDate=" + deliveryDate +
-                ", status='" + status + '\'' +
-                ", signature='" + signature + '\'' +
-                '}';
     }
 }

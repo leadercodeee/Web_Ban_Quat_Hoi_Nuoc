@@ -12,8 +12,6 @@ public class DigitalSignatureUtil {
 
     /**
      * Sinh cặp khóa RSA 2048 bit
-     * @return KeyPair
-     * @throws NoSuchAlgorithmException nếu không tìm thấy thuật toán RSA
      */
     public static KeyPair generateKeyPair() throws NoSuchAlgorithmException {
         KeyPairGenerator keyGen = KeyPairGenerator.getInstance(KEY_ALGORITHM);
@@ -23,12 +21,6 @@ public class DigitalSignatureUtil {
 
     /**
      * Ký dữ liệu đầu vào với private key, trả về chữ ký dạng Base64
-     * @param data dữ liệu cần ký
-     * @param privateKey private key dùng ký
-     * @return chuỗi chữ ký base64
-     * @throws NoSuchAlgorithmException nếu không tìm thấy thuật toán
-     * @throws InvalidKeyException nếu key không hợp lệ
-     * @throws SignatureException lỗi ký
      */
     public static String sign(String data, PrivateKey privateKey)
             throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
@@ -41,13 +33,6 @@ public class DigitalSignatureUtil {
 
     /**
      * Xác minh chữ ký từ dữ liệu, chữ ký (Base64) và public key
-     * @param data dữ liệu gốc
-     * @param signatureStr chữ ký Base64
-     * @param publicKey public key dùng xác minh
-     * @return true nếu chữ ký hợp lệ, false nếu không
-     * @throws NoSuchAlgorithmException nếu không tìm thấy thuật toán
-     * @throws InvalidKeyException nếu key không hợp lệ
-     * @throws SignatureException lỗi xác minh
      */
     public static boolean verify(String data, String signatureStr, PublicKey publicKey)
             throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
@@ -59,21 +44,21 @@ public class DigitalSignatureUtil {
     }
 
     /**
-     * Mã hóa PublicKey thành chuỗi Base64 để lưu trong database
+     * Encode public key thành chuỗi Base64 (dùng để lưu DB)
      */
     public static String encodePublicKey(PublicKey publicKey) {
         return Base64.getEncoder().encodeToString(publicKey.getEncoded());
     }
 
     /**
-     * Mã hóa PrivateKey thành chuỗi Base64 để lưu trong database
+     * Encode private key thành chuỗi Base64 (dùng để lưu DB)
      */
     public static String encodePrivateKey(PrivateKey privateKey) {
         return Base64.getEncoder().encodeToString(privateKey.getEncoded());
     }
 
     /**
-     * Chuyển chuỗi Base64 thành đối tượng PublicKey
+     * Decode chuỗi Base64 thành PublicKey
      */
     public static PublicKey decodePublicKey(String base64Key) throws GeneralSecurityException {
         byte[] keyBytes = Base64.getDecoder().decode(base64Key);
@@ -83,7 +68,7 @@ public class DigitalSignatureUtil {
     }
 
     /**
-     * Chuyển chuỗi Base64 thành đối tượng PrivateKey
+     * Decode chuỗi Base64 thành PrivateKey
      */
     public static PrivateKey decodePrivateKey(String base64Key) throws GeneralSecurityException {
         byte[] keyBytes = Base64.getDecoder().decode(base64Key);
@@ -91,4 +76,13 @@ public class DigitalSignatureUtil {
         KeyFactory kf = KeyFactory.getInstance(KEY_ALGORITHM);
         return kf.generatePrivate(spec);
     }
+    public static String signRaw(byte[] data, PrivateKey privateKey)
+            throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        Signature signature = Signature.getInstance("NONEwithRSA");
+        signature.initSign(privateKey);
+        signature.update(data);
+        byte[] signedBytes = signature.sign();
+        return Base64.getEncoder().encodeToString(signedBytes);
+    }
+
 }

@@ -3,6 +3,7 @@ package com.example.backend.controller;
 import com.example.backend.models.Order;
 import com.example.backend.models.User;
 import com.example.backend.services.OrderService;
+import com.example.backend.services.OrderSignService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -21,6 +22,7 @@ import java.text.SimpleDateFormat;
 @WebServlet("/admin/orders")
 public class OrderController extends HttpServlet {
     private final OrderService orderService = new OrderService();
+    private final OrderSignService orderSignService = new OrderSignService(); // Thêm dòng này
 
     public OrderController() throws SQLException {
         super();
@@ -55,19 +57,20 @@ public class OrderController extends HttpServlet {
             // Lấy dữ liệu từ request và chuyển thành Order object
             Order order = parseOrderFromRequest(request);
 
-            // Ký và lưu đơn hàng
-            orderService.signAndSaveOrder(order);
+            // Ký và lưu đơn hàng (gồm cả hash SHA-256)
+            boolean signed = orderSignService.signAndSaveOrder(order);
 
-            // Chuyển hướng sau khi thành công
-            response.sendRedirect(request.getContextPath() + "/admin/orders?success=true");
+            if (signed) {
+                response.sendRedirect(request.getContextPath() + "/admin/orders?success=true");
+            } else {
+                throw new Exception("Không thể lưu đơn hàng sau khi ký.");
+            }
 
         } catch (IllegalArgumentException e) {
-            // Lỗi validate dữ liệu đầu vào
             request.setAttribute("error", "Dữ liệu không hợp lệ: " + e.getMessage());
             request.getRequestDispatcher("/admin/orderForm.jsp").forward(request, response);
 
         } catch (Exception e) {
-            // Lỗi khác (ví dụ lỗi ký, lưu DB)
             e.printStackTrace();
             request.setAttribute("error", "Lỗi khi xử lý đơn hàng: " + e.getMessage());
             request.getRequestDispatcher("/admin/orderForm.jsp").forward(request, response);
@@ -76,7 +79,6 @@ public class OrderController extends HttpServlet {
 
     /**
      * Phân tích dữ liệu từ request thành Order object, kèm validate dữ liệu.
-     * @throws IllegalArgumentException nếu dữ liệu không hợp lệ
      */
     private Order parseOrderFromRequest(HttpServletRequest request) throws IllegalArgumentException {
         Order order = new Order();

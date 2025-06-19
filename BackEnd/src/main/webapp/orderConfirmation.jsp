@@ -7,6 +7,7 @@
     Map<Integer, CartItem> cartItems = (Map<Integer, CartItem>) request.getAttribute("cartItems");
     Boolean signatureValid = (Boolean) request.getAttribute("signatureValid");
     java.security.PublicKey publicKey = (java.security.PublicKey) request.getAttribute("publicKey");
+    String orderHash = (String) request.getAttribute("orderHash");
 
     // Convert public key to Base64 string for display
     String publicKeyBase64 = "";
@@ -32,7 +33,7 @@
 </head>
 <body>
 
-<h1>Thông tin đơn hàng</h1>
+<h1>HÓA ĐƠN</h1>
 
 <table>
     <tr><th>Mã đơn hàng</th><td><%= order.getId() %></td></tr>
@@ -44,6 +45,7 @@
     <tr><th>Ngày giao hàng dự kiến</th><td><%= order.getDeliveryDate() %></td></tr>
     <tr><th>Trạng thái</th><td><%= order.getStatus() %></td></tr>
 </table>
+
 
 <h2>Chi tiết sản phẩm</h2>
 <table>
@@ -77,18 +79,6 @@
     <% } %>
     </tbody>
 </table>
-
-<h2>Xác minh chữ ký số đơn hàng</h2>
-<p>
-    <% if (signatureValid != null && signatureValid) { %>
-    <span class="valid">Chữ ký số hợp lệ ✅</span>
-    <% } else { %>
-    <span class="invalid">Chữ ký số không hợp lệ ❌</span>
-    <% } %>
-</p>
-
-<h3>Public Key (Base64)</h3>
-<pre><%= publicKeyBase64 %></pre>
 
 </body>
 </html>
