@@ -49,6 +49,9 @@ public class OrderPlaceService {
 
         return orderId;
     }
+    public boolean updateOrderHashAndSignature(int orderId, String hash, String signature) {
+        return new OrderDAO().updateOrderSignatureAndHash(orderId, hash, signature);
+    }
 
 
     public Order getOrderById(int orderId) {

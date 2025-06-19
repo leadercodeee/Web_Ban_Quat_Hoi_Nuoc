@@ -27,6 +27,19 @@ public class OrderDAO {
         }
         return orders;
     }
+    public boolean updateOrderSignatureAndHash(int orderId, String hash, String signature) {
+        String sql = "UPDATE orders SET hash = ?, signature = ? WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, hash);
+            stmt.setString(2, signature);
+            stmt.setInt(3, orderId);
+            int rows = stmt.executeUpdate();
+            return rows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     public Order getOrderById(String orderId) {
         Order order = null;

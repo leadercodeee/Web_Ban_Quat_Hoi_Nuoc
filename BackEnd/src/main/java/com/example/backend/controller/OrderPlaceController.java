@@ -3,8 +3,8 @@ package com.example.backend.controller;
 import com.example.backend.models.*;
 import com.example.backend.services.OrderPlaceService;
 import com.example.backend.services.OrderPlaceDetailService;
-import com.example.backend.utils.DigitalSignatureUtil;
 import com.example.backend.services.InvoiceHashService;
+import com.example.backend.utils.DigitalSignatureUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -17,7 +17,6 @@ import java.security.PrivateKey;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Map;
 
 @WebServlet("/placeOrder")
 public class OrderPlaceController extends HttpServlet {
@@ -62,18 +61,9 @@ public class OrderPlaceController extends HttpServlet {
         order.setDeliveryDate(deliveryDate);
         order.setStatus("shipping");
 
-        try {
-            // Ký số
-            String dataToSign = order.toConcatenatedString();
-            String signature = DigitalSignatureUtil.sign(dataToSign, privateKey);
-            order.setSignature(signature);
-        } catch (Exception e) {
-            throw new RuntimeException("Lỗi khi ký số đơn hàng: " + e.getMessage(), e);
-        }
-
-        // Lưu đơn hàng
         OrderPlaceService orderService = new OrderPlaceService();
         int orderId = orderService.saveOrder(order);
+        order.setId(orderId); // để sử dụng sau
 
         // Lưu chi tiết đơn hàng
         OrderPlaceDetailService orderDetailService = new OrderPlaceDetailService();
@@ -86,32 +76,43 @@ public class OrderPlaceController extends HttpServlet {
             orderDetailService.saveOrderDetail(orderDetail);
         }
 
-        // Gán lại ID sau khi lưu để có dữ liệu đầy đủ
-        order.setId(orderId);
-
-        // Hash đơn hàng
-        InvoiceHashService hashService = new InvoiceHashService();
+        // Gán lại thông tin đơn đã lưu (để lấy đầy đủ order.getItems())
         Order savedOrder = orderService.getOrderById(orderId);
-
         if (savedOrder == null) {
             response.getWriter().write("❌ Không thể tìm thấy đơn hàng sau khi lưu.");
             return;
         }
 
         try {
-            String orderHash = hashService.generateOrderHash(savedOrder);
-            orderService.updateOrderHash(orderId, orderHash);
-            order.setHash(orderHash); // gán lại để truyền sang JSP nếu cần
+            // 1. Tạo SHA-256 hash
+            InvoiceHashService invoiceHashService = new InvoiceHashService();
+            String orderHash = invoiceHashService.generateOrderHash(savedOrder);
+            savedOrder.setHash(orderHash);
+
+            // 2. Ký điện tử từ hash bằng private key
+            String signature = DigitalSignatureUtil.sign(orderHash, privateKey);
+            savedOrder.setSignature(signature);
+
+            // 3. Lưu lại hash và chữ ký vào DB
+            boolean updated = orderService.updateOrderHashAndSignature(orderId, orderHash, signature);
+            if (!updated) {
+                response.getWriter().write("❌ Không thể cập nhật chữ ký và hash.");
+                return;
+            }
+
+            order.setHash(orderHash);
+            order.setSignature(signature);
+
         } catch (Exception e) {
             e.printStackTrace();
-            response.getWriter().write("❌ Lỗi khi tạo hash đơn hàng: " + e.getMessage());
+            response.getWriter().write("❌ Lỗi khi tạo hash hoặc chữ ký: " + e.getMessage());
             return;
         }
 
         // Xóa giỏ hàng
         session.removeAttribute("cart");
 
-        // Chuyển tiếp đến trang xác nhận đơn hàng
+        // Chuyển đến trang xác nhận
         request.setAttribute("order", order);
         request.setAttribute("cartItems", cart.getItems());
         request.getRequestDispatcher("orderConfirmation.jsp").forward(request, response);
