@@ -116,5 +116,9 @@ public class OrderPlaceController extends HttpServlet {
         request.setAttribute("order", order);
         request.setAttribute("cartItems", cart.getItems());
         request.getRequestDispatcher("orderConfirmation.jsp").forward(request, response);
+
+        request.setAttribute("signingSuccess", true); // ✅ trạng thái ký đã thành công ở trên
+        request.getRequestDispatcher("orderConfirmation.jsp").forward(request, response);
+
     }
 }

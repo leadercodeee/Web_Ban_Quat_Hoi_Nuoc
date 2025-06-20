@@ -6,15 +6,17 @@
     Order order = (Order) request.getAttribute("order");
     Map<Integer, CartItem> cartItems = (Map<Integer, CartItem>) request.getAttribute("cartItems");
     Boolean signatureValid = (Boolean) request.getAttribute("signatureValid");
+    Boolean signingSuccess = (Boolean) request.getAttribute("signingSuccess");
     java.security.PublicKey publicKey = (java.security.PublicKey) request.getAttribute("publicKey");
     String orderHash = (String) request.getAttribute("orderHash");
+    String signatureError = (String) request.getAttribute("signatureError");
 
-    // Convert public key to Base64 string for display
     String publicKeyBase64 = "";
     if (publicKey != null) {
         publicKeyBase64 = java.util.Base64.getEncoder().encodeToString(publicKey.getEncoded());
     }
 %>
+
 <%
     if ("true".equals(request.getParameter("hashed"))) {
 %>
@@ -36,6 +38,9 @@
         .valid { color: green; font-weight: bold; }
         .invalid { color: red; font-weight: bold; }
         pre { background: #f4f4f4; padding: 10px; overflow-x: auto; }
+        .status-box { margin-top: 20px; padding: 15px; border-radius: 5px; }
+        .success { background-color: #e6ffe6; border: 1px solid #00cc00; }
+        .error { background-color: #ffe6e6; border: 1px solid #ff0000; }
     </style>
 </head>
 <body>
@@ -53,7 +58,6 @@
     <tr><th>Ngày giao hàng dự kiến</th><td><%= order.getDeliveryDate() %></td></tr>
     <tr><th>Trạng thái</th><td><%= order.getStatus() %></td></tr>
 </table>
-
 
 <h2>Chi tiết sản phẩm</h2>
 <table>
@@ -85,15 +89,16 @@
     %>
     <tr><td colspan="4">Không có sản phẩm nào</td></tr>
     <% } %>
-
-
-    <form action="confirm-order" method="post">
-        <input type="hidden" name="orderId" value="<%= order.getId() %>"/>
-        <button type="submit">Xác nhận đơn hàng</button>
-    </form>
-
     </tbody>
 </table>
+
+<!-- Form xác nhận đơn hàng -->
+<form action="confirm-order" method="post">
+    <input type="hidden" name="orderId" value="<%= order.getId() %>"/>
+    <button type="submit">Xác nhận đơn hàng</button>
+</form>
+
+
 
 </body>
 </html>
