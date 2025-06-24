@@ -28,6 +28,8 @@ public class OrderDAO {
                 order.setOrderDate(rs.getTimestamp("order_date"));
                 order.setDeliveryDate(new Date(rs.getTimestamp("delivery_date").getTime()));
                 order.setStatus(rs.getString("status"));
+                order.setSignature(rs.getString("signature"));
+                order.setPublicKeyId(rs.getLong("publicKeyId"));
                 orders.add(order);
             }
         }
@@ -53,6 +55,8 @@ public class OrderDAO {
                     order.setOrderDate(resultSet.getTimestamp("order_date"));
                     order.setDeliveryDate(new Date(resultSet.getTimestamp("delivery_date").getTime()));
                     order.setStatus(resultSet.getString("status"));
+                    order.setSignature(resultSet.getString("signature"));
+                    order.setPublicKeyId(resultSet.getLong("publicKeyId"));
                 }
             }
         } catch (SQLException e) {

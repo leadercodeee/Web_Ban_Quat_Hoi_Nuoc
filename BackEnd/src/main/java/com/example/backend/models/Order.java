@@ -13,12 +13,14 @@ public class Order {
     private Timestamp orderDate;
     private Date deliveryDate;
     private String status;
+    private String signature;
+    private long publicKeyId;
 
     public Order() {
     }
 
     public Order(int id, int userId, double totalAmount, String shippingAddress, String paymentMethod, Timestamp orderDate, Date
-            deliveryDate, String status) {
+            deliveryDate, String status,String signature, long publicKeyId) {
         this.id = id;
         this.userId = userId;
         this.totalAmount = totalAmount;
@@ -27,6 +29,8 @@ public class Order {
         this.orderDate = orderDate;
         this.deliveryDate = deliveryDate;
         this.status = status;
+        this.signature = signature;
+        this.publicKeyId = publicKeyId;
     }
 
     public int getId() {
@@ -93,17 +97,35 @@ public class Order {
         this.status = status;
     }
 
+    public String getSignature() {
+        return signature;
+    }
+
+    public void setSignature(String signature) {
+        this.signature = signature;
+    }
+
+    public long getPublicKeyId() {
+        return publicKeyId;
+    }
+
+    public void setPublicKeyId(long publicKeyId) {
+        this.publicKeyId = publicKeyId;
+    }
+
     @Override
     public String toString() {
         return "Order{" +
                 "id=" + id +
                 ", userId=" + userId +
-                ", totalAmount='" + totalAmount + '\'' +
+                ", totalAmount=" + totalAmount +
                 ", shippingAddress='" + shippingAddress + '\'' +
                 ", paymentMethod='" + paymentMethod + '\'' +
-                ", orderDate='" + orderDate + '\'' +
-                ", deliveryDate='" + deliveryDate + '\'' +
+                ", orderDate=" + orderDate +
+                ", deliveryDate=" + deliveryDate +
                 ", status='" + status + '\'' +
+                ", signature='" + signature + '\'' +
+                ", publicKeyId=" + publicKeyId +
                 '}';
     }
 }
