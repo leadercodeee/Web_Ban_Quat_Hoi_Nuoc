@@ -6,7 +6,7 @@ import com.example.backend.models.Order;
 import com.example.backend.models.UserKey;
 import com.example.backend.services.InvoiceHashService;
 import com.example.backend.services.UserKeyService;
-import com.example.backend.utils.RSAKeyUtil;
+import com.example.backend.utils.KeyUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -49,7 +49,7 @@ public class TraCuuDonHangController extends HttpServlet {
 
                     // Lấy public key từ DB
                     UserKey userKey = userKeyDAO.getKeyByUserId(order.getUserId());
-                    PublicKey publicKey = RSAKeyUtil.decodePublicKey(userKey.getPublicKey());
+                    PublicKey publicKey = KeyUtil.decodePublicKey(userKey.getPublicKey());
 
                     // Ký chuỗi
                     Signature signer = Signature.getInstance("SHA256withRSA");

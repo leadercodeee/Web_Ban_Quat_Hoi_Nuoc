@@ -45,12 +45,12 @@ public class OrderSignService {
                 return false;
             }
 
-            PrivateKey privateKey = DigitalSignatureUtil.decodePrivateKey(userKey.getPrivateKey());
+
 
             // 5. Ký hash trên byte array của hash hex string
             byte[] hashBytes = HashUtil.hexStringToByteArray(hash);
-            String signature = DigitalSignatureUtil.signRaw(hashBytes, privateKey);
-            order.setSignature(signature);
+          //  String signature = DigitalSignatureUtil.signRaw(hashBytes);
+          //  order.setSignature(signature);
 
             // 6. Cập nhật lại order trong DB với signature và hashvalue
             boolean updated = orderDAO.updateOrderSignatureAndHash(order);
@@ -93,12 +93,12 @@ public class OrderSignService {
                 LOGGER.warning("User chưa có private key, userId: " + order.getUserId());
                 return false;
             }
-            PrivateKey privateKey = DigitalSignatureUtil.decodePrivateKey(userKey.getPrivateKey());
+
 
             // 5. Ký hash trên byte array
             byte[] hashBytes = HashUtil.hexStringToByteArray(hash);
-            String signature = DigitalSignatureUtil.signRaw(hashBytes, privateKey);
-            order.setSignature(signature);
+           // String signature = DigitalSignatureUtil.signRaw(hashBytes);
+          //  order.setSignature(signature);
 
             // 6. Cập nhật signature và hashvalue vào order đã lưu
             boolean updated = orderDAO.updateOrderSignatureAndHash(order);

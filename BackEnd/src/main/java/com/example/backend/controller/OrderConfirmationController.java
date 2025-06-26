@@ -52,12 +52,12 @@ public class OrderConfirmationController extends HttpServlet {
             // Lấy private key người dùng từ DB
             UserKeyDAO keyDAO = new UserKeyDAO();
             UserKey userKey = keyDAO.getKeyByUserId(order.getUserId());
-            PrivateKey privateKey = DigitalSignatureUtil.decodePrivateKey(userKey.getPrivateKey());
+
 
             // Ký điện tử
             String data = order.toConcatenatedString();
-            String signature = DigitalSignatureUtil.sign(data, privateKey);
-            order.setSignature(signature);
+         //   String signature = DigitalSignatureUtil.sign(data);
+          //  order.setSignature(signature);
 
             // Lưu lại hash và signature
             boolean updated = orderDAO.updateOrderSignatureAndHash(order);
@@ -66,10 +66,10 @@ public class OrderConfirmationController extends HttpServlet {
             UserDAO userDAO = new UserDAO();
             String pubKeyBase64 = userDAO.getUserPublicKey(order.getUserId());
             PublicKey publicKey = DigitalSignatureUtil.decodePublicKey(pubKeyBase64);
-            boolean isValid = DigitalSignatureUtil.verify(data, signature, publicKey);
+         //   boolean isValid = DigitalSignatureUtil.verify(data, signature, publicKey);
 
             request.setAttribute("signingSuccess", updated);
-            request.setAttribute("signatureValid", isValid);
+          //  request.setAttribute("signatureValid", isValid);
             request.setAttribute("order", order);
 
         } catch (Exception e) {

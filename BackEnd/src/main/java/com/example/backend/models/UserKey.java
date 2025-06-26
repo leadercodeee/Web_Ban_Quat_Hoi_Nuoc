@@ -4,15 +4,14 @@ public class UserKey {
     private int id;
     private int userId;
     private String publicKey;
-    private String privateKey;
 
     public UserKey() {
     }
 
-    public UserKey(int userId, String publicKey, String privateKey) {
+    public UserKey(int userId, String publicKey) {
         this.userId = userId;
         this.publicKey = publicKey;
-        this.privateKey = privateKey;
+
     }
 
     // Getter/setter cho id
@@ -40,12 +39,6 @@ public class UserKey {
     }
 
     // Getter/setter cho privateKey
-    public String getPrivateKey() {
-        return privateKey;
-    }
-    public void setPrivateKey(String privateKey) {
-        this.privateKey = privateKey;
-    }
 
     @Override
     public String toString() {
@@ -53,7 +46,7 @@ public class UserKey {
                 "id=" + id +
                 ", userId=" + userId +
                 ", publicKey='" + publicKey + '\'' +
-                ", privateKey='" + privateKey + '\'' +
+                 '\'' +
                 '}';
     }
 }

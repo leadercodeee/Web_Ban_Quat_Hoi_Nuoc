@@ -39,7 +39,7 @@ public class ResetKeyController extends HttpServlet {
             KeyPair keyPair = KeyUtil.generateKeyPair();
 
             // Lưu khóa mới vào database (đã chuyển Base64 bên trong)
-            userKeyDAO.saveUserKey(user.getId(), keyPair.getPrivate(), keyPair.getPublic());
+         //   userKeyDAO.saveUserKey(user.getId(), keyPair.getPrivate(), keyPair.getPublic());
 
             // Chuyển khóa sang định dạng PEM để hiển thị / download dễ dàng
             String privateKeyPEM = toPEM("PRIVATE KEY", keyPair.getPrivate().getEncoded());
