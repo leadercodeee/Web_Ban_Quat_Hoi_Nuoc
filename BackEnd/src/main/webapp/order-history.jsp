@@ -2,11 +2,14 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="com.example.backend.models.Order" %>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <title>Lịch sử đơn hàng</title>
+
     <style>
+        /* ---------- Layout & Typography ---------- */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f9f9f9;
@@ -18,6 +21,8 @@
             text-align: center;
             margin-bottom: 30px;
         }
+
+        /* ---------- Table ---------- */
         table {
             border-collapse: collapse;
             width: 80%;
@@ -33,40 +38,42 @@
         }
         thead {
             background-color: #236313;
-            color: white;
+            color: #fff;
             font-weight: 600;
         }
-        tbody tr:nth-child(even) {
-            background-color: #f2f6fb;
-        }
+        tbody tr:nth-child(even) { background-color: #f2f6fb; }
         tbody tr:hover {
             background-color: #d0e7ff;
             cursor: pointer;
         }
+
+        /* ---------- Buttons ---------- */
         .btn-detail {
             padding: 6px 12px;
             background-color: #236313;
-            color: white;
+            color: #fff;
             border-radius: 4px;
-            transition: background-color 0.3s ease;
             text-decoration: none;
+            transition: background-color 0.3s ease;
         }
-        .btn-detail:hover {
-            background-color: #236313;
-        }
+        .btn-detail:hover { background-color: #1c4e0f; }
+
+        /* ---------- Signature status ---------- */
+        .signed   { color: #27ae60; font-weight: bold; }  /* Đã ký */
+        .unsigned { color: #e74c3c; }                     /* Chưa ký */
+
+        /* ---------- Empty list message ---------- */
         p.no-orders {
             text-align: center;
             font-size: 1.1rem;
             color: #888;
             margin-top: 50px;
         }
+
+        /* ---------- Responsive ---------- */
         @media (max-width: 768px) {
-            table {
-                width: 95%;
-            }
-            th, td {
-                padding: 10px;
-            }
+            table  { width: 95%; }
+            th, td { padding: 10px; }
         }
     </style>
 </head>
@@ -89,9 +96,11 @@
         <th>Mã đơn hàng</th>
         <th>Ngày đặt</th>
         <th>Tổng tiền</th>
+        <th>Trạng thái chữ ký</th>
         <th>Chi tiết</th>
     </tr>
     </thead>
+
     <tbody>
     <%
         for (Order order : orders) {
@@ -100,7 +109,22 @@
         <td><%= order.getId() %></td>
         <td><%= sdf.format(order.getOrderDate()) %></td>
         <td><%= String.format("%,.0f VNĐ", order.getTotalAmount()) %></td>
-        <td><a class="btn-detail" href="order-confirmation?orderId=<%= order.getId() %>">Xem chi tiết</a></td>
+
+        <!-- Trạng thái chữ ký -->
+        <td>
+            <% if (order.getSignature() != null && !order.getSignature().trim().isEmpty()) { %>
+            <span class="signed">Đã ký</span>
+            <% } else { %>
+            <span class="unsigned">Chưa ký</span>
+            <% } %>
+        </td>
+
+        <td>
+            <a class="btn-detail"
+               href="order-confirmation?orderId=<%= order.getId() %>">
+                Xem chi tiết
+            </a>
+        </td>
     </tr>
     <%
         }
@@ -108,7 +132,7 @@
     </tbody>
 </table>
 <%
-    }
+    }  /* end if orders list */
 %>
 
 </body>

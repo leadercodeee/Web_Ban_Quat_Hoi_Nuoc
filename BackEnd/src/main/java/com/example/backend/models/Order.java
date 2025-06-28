@@ -120,6 +120,10 @@ public class Order {
                 formattedDeliveryDate + "|" +
                 (status != null ? status : "");
     }
+    public boolean isSigned() {
+        return signature != null && !signature.trim().isEmpty();
+    }
+
 
 
 }
