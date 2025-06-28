@@ -177,6 +177,9 @@
             >THANH TOÁN</a
             >
           </button>
+          <button>
+            <a style="color: white; display: block; width: 100%" href="order-history">XEM LỊCH SỬ ĐƠN HÀNG</a>
+          </button>
         </div>
       </div>
     </div>

@@ -1,83 +1,104 @@
-
-<%@ page import="com.example.backend.models.CartItem" %>
-<%@ page import="java.util.Map" %>
-<%@ page import="com.example.backend.models.Product" %>
-<%@ page import="java.text.SimpleDateFormat" %>
-<%@ page import="com.example.backend.models.Order" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html lang="en">
+<%@ page import="com.example.backend.models.Order, com.example.backend.models.CartItem" %>
+<%@ page import="java.util.Map" %>
+
+<%
+    Order order = (Order) request.getAttribute("order");
+    Map<Integer, CartItem> cartItems = (Map<Integer, CartItem>) request.getAttribute("cartItems");
+    Boolean signatureValid = (Boolean) request.getAttribute("signatureValid");
+    Boolean signingSuccess = (Boolean) request.getAttribute("signingSuccess");
+    java.security.PublicKey publicKey = (java.security.PublicKey) request.getAttribute("publicKey");
+    String orderHash = (String) request.getAttribute("orderHash");
+    String signatureError = (String) request.getAttribute("signatureError");
+
+    String publicKeyBase64 = "";
+    if (publicKey != null) {
+        publicKeyBase64 = java.util.Base64.getEncoder().encodeToString(publicKey.getEncoded());
+    }
+%>
+
+<%
+    if ("true".equals(request.getParameter("hashed"))) {
+%>
+<p style="color: green;"><strong>✅ Đã hash đơn hàng thành công.</strong></p>
+<%
+    }
+%>
+
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
-    <meta name="author" content="Untree.co"/>
-    <link rel="shortcut icon" href="favicon.png"/>
-    <link href="css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="css/style.css" rel="stylesheet"/>
-    <title>Order Confirmation</title>
+    <meta charset="UTF-8">
+    <title>Xác nhận đơn hàng</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .valid { color: green; font-weight: bold; }
+        .invalid { color: red; font-weight: bold; }
+        pre { background: #f4f4f4; padding: 10px; overflow-x: auto; }
+        .status-box { margin-top: 20px; padding: 15px; border-radius: 5px; }
+        .success { background-color: #e6ffe6; border: 1px solid #00cc00; }
+        .error { background-color: #ffe6e6; border: 1px solid #ff0000; }
+    </style>
 </head>
-
 <body>
-<div class="container">
-    <h2 class="mt-5">Order Confirmation</h2>
-    <div class="order-details">
-        <p><strong>Địa chỉ giao hàng:</strong> ${order.shippingAddress}</p>
-        <p><strong>Phương thức thanh toán:</strong> ${order.paymentMethod}</p>
-        <%
-            Order order = (Order) request.getAttribute("order");
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-            String formattedOrderDate = dateFormat.format(order.getOrderDate());
-            String formattedDeliveryDate = dateFormat.format(order.getDeliveryDate());
-            java.text.NumberFormat currencyFormatter =
-                    java.text.NumberFormat.getCurrencyInstance(new java.util.Locale("vi", "VN"));
-        %>
-        <p><strong>Tổng tiền:</strong> <%=currencyFormatter.format(order.getTotalAmount())%></p>
+<h1>Xác nhận đơn hàng</h1>
 
-        <p><strong>Ngày đặt hàng:</strong> <%=formattedOrderDate%>
-        </p>
-        <p><strong>Ngày giao hàng:</strong> <%=formattedDeliveryDate%>
-        </p>
-    </div>
+<table>
+    <tr><th>Mã đơn hàng</th><td><%= order.getId() %></td></tr>
+    <tr><th>ID người dùng</th><td><%= order.getUserId() %></td></tr>
+    <tr><th>Số điện thoại</th><td><%= order.getPhone() != null ? order.getPhone() : "Không có sđt" %></td></tr>
+    <tr><th>Tổng tiền</th><td><%= String.format("%,.2f", order.getTotalAmount()) %> VNĐ</td></tr>
+    <tr><th>Địa chỉ giao hàng</th><td><%= order.getShippingAddress() %></td></tr>
+    <tr><th>Phương thức thanh toán</th><td><%= order.getPaymentMethod() %></td></tr>
+    <tr><th>Ngày đặt hàng</th><td><%= order.getOrderDate() %></td></tr>
+    <tr><th>Ngày giao hàng dự kiến</th><td><%= order.getDeliveryDate() %></td></tr>
+    <tr><th>Trạng thái</th><td><%= order.getStatus() %></td></tr>
+</table>
 
-    <h4>Sản phẩm trong đơn hàng của bạn:</h4>
-    <table class="table table-striped">
-        <thead>
-        <tr>
-            <th>Tên sản phẩm</th>
-            <th>Số lượng</th>
-            <th>Giá</th>
-            <th>Thành tiền</th>
-        </tr>
-        </thead>
-        <tbody>
-        <%
-            // Hiển thị các sản phẩm trong giỏ hàng
-            Map<Integer, CartItem> cartItems = (Map<Integer, CartItem>) request.getAttribute("cartItems");
+<h2>Chi tiết sản phẩm</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Tên sản phẩm</th>
+        <th>Số lượng</th>
+        <th>Đơn giá (VNĐ)</th>
+        <th>Thành tiền (VNĐ)</th>
+    </tr>
+    </thead>
+    <tbody>
+    <%
+        if (cartItems != null) {
+            for (CartItem item : cartItems.values()) {
+                double price = item.getProduct().getPrice();
+                int quantity = item.getQuantity();
+                double total = price * quantity;
+    %>
+    <tr>
+        <td><%= item.getProduct().getName() %></td>
+        <td><%= quantity %></td>
+        <td><%= String.format("%,.2f", price) %></td>
+        <td><%= String.format("%,.2f", total) %></td>
+    </tr>
+    <%
+        }
+    } else {
+    %>
+    <tr><td colspan="4">Không có sản phẩm nào</td></tr>
+    <% } %>
+    </tbody>
+</table>
 
-            for (CartItem cartItem : cartItems.values()) {
-                Product product = cartItem.getProduct();
-                double totalPrice = cartItem.getQuantity() * product.getPrice();
-        %>
-        <tr>
-            <td><%= product.getName() %>
-            </td>
-            <td><%= cartItem.getQuantity() %>
-            </td>
-            <%
-                String formattedPrice = currencyFormatter.format(product.getPrice());
-            %>
-            <td><%= formattedPrice %> </td>
-            <td><%= currencyFormatter.format(totalPrice) %> </td>
-        </tr>
-        <%
-            }
-        %>
-        </tbody>
-    </table>
+<!-- Form xác nhận đơn hàng -->
+<form action="confirm-order" method="post">
+    <input type="hidden" name="orderId" value="<%= order.getId() %>"/>
+    <button type="submit">Xác nhận đơn hàng</button>
+</form>
 
-    <div class="mt-5">
-        <a href="/home" class="btn btn-primary">Continue Shopping</a>
-    </div>
-</div>
+
+
 </body>
 </html>

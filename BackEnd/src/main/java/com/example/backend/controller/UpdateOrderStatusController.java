@@ -16,6 +16,10 @@ import java.sql.SQLException;
 @WebServlet("/admin/updateOrderStatus")
 public class UpdateOrderStatusController extends HttpServlet {
     private OrderService orderService = new OrderService();
+
+    public UpdateOrderStatusController() throws SQLException {
+    }
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int orderId = Integer.parseInt(request.getParameter("orderId"));
         String status = request.getParameter("status");
