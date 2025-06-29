@@ -108,9 +108,9 @@
         <table class="table table-striped table-bordered align-middle">
             <thead class="table-light">
             <tr>
-                <th>#</th>
-                <th>Ngày tạo</th>
+                <th>ID</th>
                 <th>Trạng thái</th>
+                <th>Ngày tạo</th>
                 <th>Ghi chú</th>
             </tr>
             </thead>
