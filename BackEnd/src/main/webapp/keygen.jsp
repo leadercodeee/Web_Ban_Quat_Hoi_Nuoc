@@ -99,7 +99,7 @@
         <form action="reset-key" method="post">
             <button class="btn btn-warning"><i class="fa-solid fa-rotate"></i> Báo mất khoá – Tạo lại</button>
         </form>
-        <a class="btn btn-outline-primary" href="sign.jsp"><i class="fa-solid fa-file-signature"></i> Xem & ký đơn hàng</a>
+        <a class="btn btn-outline-primary" href="order-history"><i class="fa-solid fa-file-signature"></i> Xem & ký đơn hàng</a>
     </div>
 
     <!-- Lịch sử khoá -->
@@ -109,8 +109,8 @@
             <thead class="table-light">
             <tr>
                 <th>ID</th>
-                <th>Trạng thái</th>
                 <th>Ngày tạo</th>
+                <th>Trạng thái</th>
                 <th>Ghi chú</th>
             </tr>
             </thead>
